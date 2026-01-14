@@ -25,7 +25,7 @@ const redisServiceProvider: Provider = {
       host: config.get(ENV_KEY.REDIS_HOST, 'localhost'),
       port: config.get(ENV_KEY.REDIS_PORT, 6379),
       password: config.get(ENV_KEY.REDIS_PASSWORD),
-      keyPrefix: config.get(ENV_KEY.SERVICE_NAME, 'greenflag-backend'),
+      keyPrefix: config.get(ENV_KEY.SERVICE_NAME, 'heartify-backend') + ':',
     });
   },
   inject: [ConfigService],
