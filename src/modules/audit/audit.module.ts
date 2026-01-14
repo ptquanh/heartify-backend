@@ -25,7 +25,7 @@ const auditServiceProvider: Provider = {
       ? new WebhookAuditGateway(webhookUrl, httpService, {
           projectName: configService.get(
             ENV_KEY.SERVICE_NAME,
-            'greenflag-backend',
+            'heartify-backend',
           ),
         })
       : new StdOutAuditGateway();
