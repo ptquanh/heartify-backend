@@ -1,0 +1,53 @@
+export const INJECTION_TOKEN = {
+  AUDIT_SERVICE: Symbol.for('AUDIT_SERVICE'),
+  HTTP_SERVICE: Symbol.for('HTTP_SERVICE'),
+  REDIS_SERVICE: Symbol.for('REDIS_SERVICE'),
+  SYNC_TASK_QUEUE: Symbol.for('SYNC_TASK_QUEUE'),
+};
+
+export const ERR_CODE = {
+  INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR'.toLowerCase(),
+  NOT_FOUND: 'NOT_FOUND'.toLowerCase(),
+  BAD_REQUEST: 'BAD_REQUEST'.toLowerCase(),
+  ALREADY_EXISTS: 'ALREADY_EXISTS'.toLowerCase(),
+  UNPROCESSABLE_ENTITY: 'UNPROCESSABLE_ENTITY'.toLowerCase(),
+  FORBIDDEN: 'FORBIDDEN'.toLowerCase(),
+  UNAUTHORIZED: 'UNAUTHORIZED'.toLowerCase(),
+};
+
+export const APP_ACTION = {
+  API_CALL: 'API_CALL'.toLowerCase(),
+  HANDLE_EXCEPTION: 'HANDLE_EXCEPTION'.toLowerCase(),
+};
+
+export enum ENV_KEY {
+  PORT = 'PORT',
+  NODE_ENV = 'NODE_ENV',
+
+  AUDIT_WEBHOOK_URL = 'AUDIT_WEBHOOK_URL',
+
+  REDIS_HOST = 'REDIS_HOST',
+  REDIS_PORT = 'REDIS_PORT',
+  REDIS_PASSWORD = 'REDIS_PASSWORD',
+
+  SERVICE_NAME = 'SERVICE_NAME',
+
+  JWT_SECRET = 'JWT_SECRET',
+  JWT_EXPIRATION = 'JWT_EXPIRATION',
+}
+
+export enum METADATA_KEY {
+  MAX_CONCURRENCY_CALL = 'max_concurrency_call',
+  RATE_LIMITING = 'rate_limiting',
+}
+
+export const DEFAULT_MAX_CONCURRENT_CALL = 1;
+
+export enum HEADER_KEY {
+  CAPTCHA_TOKEN = 'X-Captcha-Token',
+  LOG_ID = 'X-Log-ID',
+  SESSION_TOKEN = 'X-Session-Token',
+  ACCESS_KEY_ID = 'X-Access-Key-ID',
+  ACCESS_KEY_SECRET = 'X-Access-Key-Secret',
+  PARTNER_ACCESS_SECRET = 'X-Partner-Access-Secret',
+}
