@@ -1,0 +1,106 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: heartify-backend
+    ports:
+      - '${PORT:-3030}:${PORT:-3030}'
+    environment:
+      NODE_ENV: '${NODE_ENV:-development}'
+      PORT: '${PORT:-3030}'
+      ENABLE_SWAGGER: '${ENABLE_SWAGGER:-true}'
+      ENABLE_CORS: '${ENABLE_CORS:-true}'
+
+      DB_HOST: 'postgres'
+      DB_PORT: '5432'
+      DB_USERNAME: '${DB_USERNAME:-postgres}'
+      DB_PASSWORD: '${DB_PASSWORD:-postgres}'
+      DB_SCHEMA: '${DB_SCHEMA:-heartify_db}'
+      DB_SYNCHRONIZE: '${DB_SYNCHRONIZE:-true}'
+      DB_LOGGING: '${DB_LOGGING:-false}'
+
+      REDIS_HOST: 'redis'
+      REDIS_PORT: '6379'
+      REDIS_PASSWORD: '${REDIS_PASSWORD:-}'
+      SERVICE_NAME: '${SERVICE_NAME:-heartify-backend}'
+
+      # Misc application configs
+      JWT_SECRET: '${JWT_SECRET}'
+      JWT_EXPIRATION: '${JWT_EXPIRATION}'
+      ENCRYPTION_KEY: '${ENCRYPTION_KEY}'
+      AUDIT_WEBHOOK_URL: '${AUDIT_WEBHOOK_URL}'
+
+      # Opik
+      OPIK_API_KEY: '${OPIK_API_KEY}'
+      OPIK_WORKSPACE: '${OPIK_WORKSPACE}'
+      OPIK_PROJECT: '${OPIK_PROJECT}'
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - heartify-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: heartify-postgres
+    environment:
+      POSTGRES_DB: '${DB_SCHEMA:-heartify_db}'
+      POSTGRES_USER: '${DB_USERNAME:-postgres}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD:-postgres}'
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_SCHEMA:-heartify_db}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - heartify-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: heartify-redis
+    ports:
+      - '${REDIS_PORT_EXPOSE:-6379}:6379'
+    command: >
+      --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - heartify-network
+    restart: unless-stopped
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: heartify-tunnel
+    restart: always
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    networks:
+      - heartify-network
+
+networks:
+  heartify-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
