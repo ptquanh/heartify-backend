@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuditModule } from '@modules/audit/audit.module';
 import { GlobalModule } from '@modules/global/global.module';
+import { OpikModule } from '@modules/opik/opik.module';
+import { TestOpikModule } from '@modules/test-opik/test-opik.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { GlobalModule } from '@modules/global/global.module';
     ScheduleModule.forRoot(),
     GlobalModule,
     AuditModule,
+    OpikModule,
+    TestOpikModule,
   ],
 })
 export class AppModule {}

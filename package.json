@@ -20,39 +20,41 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/common": "^11.0.1",
-    "@nestjs/core": "^11.0.1",
-    "@nestjs/platform-express": "^11.0.1",
-    "reflect-metadata": "^0.2.2",
     "@nestjs/axios": "^3.0.2",
+    "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.0",
+    "@nestjs/core": "^11.0.1",
     "@nestjs/event-emitter": "^3.0.0",
     "@nestjs/jwt": "^11.0.0",
+    "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/schedule": "^6.0.0",
     "@nestjs/swagger": "^11.0.3",
-    "rxjs": "^7.8.1",
+    "@nestjs/typeorm": "^11.0.0",
     "axios": "^1.7.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "dayjs": "^1.11.13",
     "escape-html": "^1.0.3",
+    "lodash": "^4.17.21",
     "mathjs": "^14.2.0",
     "mvc-common-toolkit": "^1.37.1",
-    "sanitize-html": "^2.14.0",
-    "@nestjs/schedule": "^6.0.0",
-    "@nestjs/typeorm": "^11.0.0",
-    "lodash": "^4.17.21",
+    "opik": "^1.9.82",
     "pg": "^8.14.1",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "sanitize-html": "^2.14.0",
     "typeorm": "^0.3.22",
-    "dayjs": "^1.11.13"
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
-    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@eslint/js": "^9.18.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
     "@swc/cli": "^0.6.0",
     "@swc/core": "^1.10.7",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",
@@ -83,6 +85,13 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1",
+      "^opik$": "<rootDir>/src/shared/mocks/opik.mock.ts"
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!(opik)/)"
+    ],
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],

@@ -3,6 +3,7 @@ export const INJECTION_TOKEN = {
   HTTP_SERVICE: Symbol.for('HTTP_SERVICE'),
   REDIS_SERVICE: Symbol.for('REDIS_SERVICE'),
   SYNC_TASK_QUEUE: Symbol.for('SYNC_TASK_QUEUE'),
+  OPIK_SERVICE: Symbol.for('OPIK_SERVICE'),
 };
 
 export const ERR_CODE = {
@@ -34,6 +35,12 @@ export enum ENV_KEY {
 
   JWT_SECRET = 'JWT_SECRET',
   JWT_EXPIRATION = 'JWT_EXPIRATION',
+
+  ENCRYPTION_KEY = 'ENCRYPTION_KEY',
+
+  OPIK_API_KEY = 'OPIK_API_KEY',
+  OPIK_WORKSPACE = 'OPIK_WORKSPACE',
+  OPIK_PROJECT = 'OPIK_PROJECT',
 }
 
 export enum METADATA_KEY {
@@ -50,4 +57,10 @@ export enum HEADER_KEY {
   ACCESS_KEY_ID = 'X-Access-Key-ID',
   ACCESS_KEY_SECRET = 'X-Access-Key-Secret',
   PARTNER_ACCESS_SECRET = 'X-Partner-Access-Secret',
+}
+
+export enum ENTITY_STATUS {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  SUSPENDED = 'suspended',
 }
