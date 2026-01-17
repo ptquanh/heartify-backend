@@ -38,6 +38,7 @@
     "lodash": "^4.17.21",
     "mathjs": "^14.2.0",
     "mvc-common-toolkit": "^1.37.1",
+    "nodemailer": "^7.0.12",
     "opik": "^1.9.82",
     "pg": "^8.14.1",
     "reflect-metadata": "^0.2.2",
