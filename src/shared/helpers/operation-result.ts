@@ -1,4 +1,4 @@
-import { OperationResult } from 'mvc-common-toolkit';
+import { OperationResult, PaginationResult } from 'mvc-common-toolkit';
 
 import { HttpStatus } from '@nestjs/common';
 
@@ -76,4 +76,19 @@ export const generateUnprocessableEntityResult = (
 export const generateEmptyPaginationResult = (): OperationResult => ({
   success: true,
   data: { rows: [], total: 0 },
+});
+
+export const generateSuccessResult = (
+  data?: any,
+  message?: string,
+): OperationResult => ({
+  success: true,
+  data,
+  message,
+  httpCode: HttpStatus.OK,
+});
+
+export const generateEmptyPaginationData = (): Partial<PaginationResult> => ({
+  rows: [],
+  total: 0,
 });

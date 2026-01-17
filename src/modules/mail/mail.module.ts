@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { ENV_KEY, INJECTION_TOKEN } from '@shared/constants';
 
-import { NodemailerTransporter } from './mail.service';
+import { NodemailerTransporter } from './nodemailer-transporter.service';
 
 export const emailSenderProvider: Provider = {
   provide: INJECTION_TOKEN.EMAIL_SENDER,
