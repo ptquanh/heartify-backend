@@ -1,0 +1,197 @@
+import {
+  IsAlphanumeric,
+  IsEmail,
+  IsEnum,
+  IsIn,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsStrongPassword,
+  Length,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import { OperationResult } from 'mvc-common-toolkit';
+
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+import { APP_ACTION, ERR_CODE, SOCIAL_PROVIDER } from '@shared/constants';
+import {
+  OnlyTextAndNumbers,
+  TrimAndLowercase,
+} from '@shared/decorators/sanitize-input';
+import { generateBadRequestResult } from '@shared/helpers/operation-result.helper';
+
+export class RegisterDTO {
+  @ApiProperty({
+    description: 'The email of the user',
+  })
+  @IsEmail()
+  @TrimAndLowercase()
+  email: string;
+
+  @ApiProperty({
+    description: 'The username of the user',
+  })
+  @IsString()
+  @IsAlphanumeric()
+  @OnlyTextAndNumbers({
+    includeWhitespaces: false,
+    onlyASCII: true,
+    throwOnError: true,
+    allowedSymbols: false,
+  })
+  @TrimAndLowercase()
+  username: string;
+
+  @ApiProperty({
+    description: 'The password of the user',
+  })
+  @IsString()
+  @IsStrongPassword()
+  password: string;
+}
+
+export class VerifyOtpDTO {
+  @ApiProperty({
+    description: 'The user id',
+  })
+  @IsNotEmpty()
+  @IsString()
+  userId: string;
+
+  @ApiProperty({
+    description: 'The otp code',
+  })
+  @IsNotEmpty()
+  @IsString()
+  @Length(6, 6)
+  code: string;
+
+  @ApiProperty({
+    description: 'The app action',
+  })
+  @IsNotEmpty()
+  @IsString()
+  @IsIn([APP_ACTION.REGISTER])
+  action: string;
+}
+
+export class ResendEmailDTO {
+  @ApiProperty({
+    description: 'The email to resend',
+  })
+  @IsNotEmpty()
+  @IsEmail()
+  @TrimAndLowercase()
+  email: string;
+}
+
+export class LoginDTO {
+  @ApiProperty({
+    description: 'The email of the user',
+  })
+  @IsEmail()
+  @TrimAndLowercase()
+  email: string;
+
+  @ApiProperty({
+    description: 'The password of the user',
+  })
+  @IsString()
+  @MinLength(8)
+  @MaxLength(60)
+  password: string;
+}
+
+export class ChangePasswordDTO {
+  @ApiProperty({
+    description: 'The old password of the user',
+  })
+  @IsNotEmpty()
+  @IsStrongPassword()
+  @Length(8, 60)
+  oldPassword: string;
+
+  @ApiProperty({
+    description: 'The new password of the user',
+  })
+  @IsNotEmpty()
+  @IsStrongPassword()
+  @Length(8, 60)
+  newPassword: string;
+}
+
+export class ForgotPasswordDTO {
+  @ApiProperty({
+    example: 'abc@gmail.com',
+  })
+  @MinLength(3)
+  @MaxLength(255)
+  @IsEmail()
+  @TrimAndLowercase()
+  email: string;
+}
+
+export class ResetPasswordDTO extends ForgotPasswordDTO {
+  public validate(): OperationResult {
+    if (this.newPassword !== this.confirmNewPassword) {
+      return generateBadRequestResult(
+        'Password confirmation does not match',
+        ERR_CODE.PASSWORD_CONFIRMATION_MISMATCH,
+      );
+    }
+
+    return {
+      success: true,
+    };
+  }
+
+  @ApiProperty({
+    description: 'The new password of the user',
+  })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(8)
+  @MaxLength(60)
+  @IsStrongPassword()
+  newPassword: string;
+
+  @ApiProperty({
+    description: 'Confirm the new password of the user',
+  })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(8)
+  @MaxLength(60)
+  confirmNewPassword: string;
+
+  @ApiProperty({
+    description: 'The token to verify',
+  })
+  @IsString()
+  @IsAlphanumeric()
+  @OnlyTextAndNumbers({
+    includeWhitespaces: false,
+    onlyASCII: true,
+    throwOnError: true,
+    allowedSymbols: false,
+  })
+  otpCode: string;
+}
+
+export class SocialAccountDTO {
+  @ApiProperty({
+    enum: SOCIAL_PROVIDER,
+    description: 'The name of provider',
+  })
+  @IsEnum(SOCIAL_PROVIDER)
+  provider: string;
+
+  @ApiPropertyOptional({
+    description: 'The code from provider',
+  })
+  @IsOptional()
+  @IsString()
+  code: string;
+}

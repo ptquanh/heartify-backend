@@ -9,7 +9,7 @@ import { ERR_CODE } from '@shared/constants';
 import {
   generateConflictResult,
   generateSuccessResult,
-} from '@shared/helpers/operation-result';
+} from '@shared/helpers/operation-result.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import { VerifyUniquenessUserDTO } from './user.dto';

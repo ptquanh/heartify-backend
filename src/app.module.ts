@@ -5,9 +5,12 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuditModule } from '@modules/audit/audit.module';
+import { AuthModule } from '@modules/auth/auth.module';
+import { EmailModule } from '@modules/email/email.module';
 import { GlobalModule } from '@modules/global/global.module';
 import { OpikModule } from '@modules/opik/opik.module';
 import { TestOpikModule } from '@modules/test-opik/test-opik.module';
+import { UserModule } from '@modules/user/user.module';
 
 @Module({
   imports: [
@@ -36,6 +39,8 @@ import { TestOpikModule } from '@modules/test-opik/test-opik.module';
     GlobalModule,
     AuditModule,
     OpikModule,
+    EmailModule,
+    AuthModule,
     TestOpikModule,
   ],
 })

@@ -1,7 +1,8 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
+import { AuditWithTimezone } from '@modules/audit/audit.entity';
+
 import { ENTITY_STATUS } from '@shared/constants';
-import { AuditWithTimezone } from '@shared/models/audit.model';
 
 @Entity('users')
 export class User extends AuditWithTimezone {
@@ -19,7 +20,7 @@ export class User extends AuditWithTimezone {
   @Column({ nullable: true })
   password: string;
 
-  @Column({ default: ENTITY_STATUS.ACTIVE })
+  @Column({ default: ENTITY_STATUS.INACTIVE })
   status: ENTITY_STATUS;
 
   @Column({

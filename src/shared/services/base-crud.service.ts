@@ -11,9 +11,9 @@ import {
 
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
-import * as queryHelper from '@shared/helpers/query-helper';
-import { PaginationDTO } from '@shared/models/pagination.dto';
-import { PaginationResult, RunnerUser } from '@shared/types';
+import { PaginationDTO } from '@shared/dtos/pagination.dto';
+import * as queryHelper from '@shared/helpers/query.helper';
+import { PaginationResult, RunnerUser } from '@shared/interfaces';
 
 @Injectable()
 export abstract class BaseCRUDService<T extends ObjectLiteral> {

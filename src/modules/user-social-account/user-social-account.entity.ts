@@ -1,6 +1,6 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-import { AuditWithTimezone } from '@shared/models/audit.model';
+import { AuditWithTimezone } from '@modules/audit/audit.entity';
 
 @Entity('user_social_accounts')
 export class UserSocialAccount extends AuditWithTimezone {

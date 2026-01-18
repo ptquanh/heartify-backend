@@ -13,26 +13,27 @@ import {
 } from '@nestjs/swagger';
 
 import { ERR_CODE } from '@shared/constants';
-import { SuccessResponseDTO } from '@shared/models/response.dto';
+import { SuccessResponseDTO } from '@shared/dtos/response.dto';
 
 export function ApiOperationSuccess<T>(model?: Type<T>) {
   return applyDecorators(
-    ApiExtraModels(SuccessResponseDTO, model),
+    model
+      ? ApiExtraModels(SuccessResponseDTO, model)
+      : ApiExtraModels(SuccessResponseDTO),
+
     ApiOkResponse({
-      schema: model
-        ? {
-            allOf: [
-              { $ref: getSchemaPath(SuccessResponseDTO) },
-              {
-                properties: {
-                  data: { $ref: getSchemaPath(model) },
-                },
-              },
-            ],
-          }
-        : {
-            $ref: getSchemaPath(SuccessResponseDTO),
+      schema: {
+        allOf: [
+          { $ref: getSchemaPath(SuccessResponseDTO) },
+          {
+            properties: {
+              data: model
+                ? { $ref: getSchemaPath(model) }
+                : { type: 'string', example: '', default: '' },
+            },
           },
+        ],
+      },
     }),
   );
 }
