@@ -9,6 +9,8 @@ services:
     environment:
       NODE_ENV: '${NODE_ENV:-development}'
       PORT: '${PORT:-3030}'
+      APP_URL: '${APP_URL}'
+      APP_NAME: '${APP_NAME}'
       ENABLE_SWAGGER: '${ENABLE_SWAGGER:-true}'
       ENABLE_CORS: '${ENABLE_CORS:-true}'
 
@@ -35,6 +37,14 @@ services:
       OPIK_API_KEY: '${OPIK_API_KEY}'
       OPIK_WORKSPACE: '${OPIK_WORKSPACE}'
       OPIK_PROJECT: '${OPIK_PROJECT}'
+
+      SMTP_HOST: '${SMTP_HOST}'
+      SMTP_PORT: '${SMTP_PORT}'
+      SMTP_SECURE: '${SMTP_SECURE}'
+      SMTP_USERNAME: '${SMTP_USERNAME}'
+      SMTP_PASSWORD: '${SMTP_PASSWORD}'
+
+      ADMIN_EMAILS: '${ADMIN_EMAILS}'
 
     depends_on:
       postgres:

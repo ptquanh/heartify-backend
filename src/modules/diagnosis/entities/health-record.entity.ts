@@ -5,16 +5,20 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { AuditWithTimezone } from '@modules/audit/audit.entity';
 import { User } from '@modules/user/entities/user.entity';
 
-import { DiagnosisAssessment } from './entities/diagnosis-assessment.entity';
+import { DiagnosisAssessment } from './diagnosis-assessment.entity';
 
 @Entity('health_records')
 @Index('idx_health_history', ['userId', 'recordedAt'])
 export class HealthRecord extends AuditWithTimezone {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
   @ManyToOne(() => User, (user) => user.healthRecords)
   @JoinColumn({ name: 'user_id' })
   user: User;

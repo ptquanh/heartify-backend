@@ -1,11 +1,20 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { AuditWithTimezone } from '@modules/audit/audit.entity';
 
-import { HealthRecord } from '../health-record.entity';
+import { HealthRecord } from './health-record.entity';
 
 @Entity('diagnosis_assessments')
 export class DiagnosisAssessment extends AuditWithTimezone {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
   @ManyToOne(() => HealthRecord, (record) => record.diagnosisAssessments)
   @JoinColumn({ name: 'health_record_id' })
   healthRecord: HealthRecord;
