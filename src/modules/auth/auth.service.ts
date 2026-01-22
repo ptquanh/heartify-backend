@@ -27,6 +27,7 @@ import {
   ENV_KEY,
   ERR_CODE,
   INJECTION_TOKEN,
+  VERIFY_OTP_ACTION,
 } from '@shared/constants';
 import { TTL_1_HOUR, TTL_10_MINUTES } from '@shared/helpers/cache-ttl.helper';
 import {
@@ -110,7 +111,7 @@ export class AuthService {
       const otpCode = generateOtpCode();
 
       await this.cacheService.set(
-        otpCacheKey(user.id, APP_ACTION.REGISTER),
+        otpCacheKey(user.id, VERIFY_OTP_ACTION.REGISTER),
         otpCode,
         {
           policy: SET_CACHE_POLICY.WITH_TTL,
@@ -150,77 +151,113 @@ export class AuthService {
     logId: string,
     dto: ResendEmailDTO,
   ): Promise<OperationResult> {
-    const user = await this.userService.findOne({ email: dto.email });
+    try {
+      const user = await this.userService.findOne({ email: dto.email });
 
-    if (!user) {
-      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
-    }
+      if (!user) {
+        return generateNotFoundResult(
+          'User not found',
+          ERR_CODE.USER_NOT_FOUND,
+        );
+      }
 
-    if (user.status !== ENTITY_STATUS.INACTIVE) {
-      return generateConflictResult(
-        'Your account is active',
-        ERR_CODE.ALREADY_EXISTS,
+      if (user.status !== ENTITY_STATUS.INACTIVE) {
+        return generateConflictResult(
+          'Your account is active',
+          ERR_CODE.ALREADY_EXISTS,
+        );
+      }
+
+      const otpCode = generateOtpCode();
+
+      await this.cacheService.set(
+        otpCacheKey(user.id, VERIFY_OTP_ACTION.REGISTER),
+        otpCode,
+        {
+          policy: SET_CACHE_POLICY.WITH_TTL,
+          value: TTL_10_MINUTES,
+        },
       );
+
+      this.emailService.send({
+        to: user.email,
+        subject: this.getEmailSubject('Verify your email'),
+        content: {
+          username: user.username,
+          passCode: otpCode,
+        },
+        templatePath: EMAIL_TEMPLATE.EMAIL_VERIFICATION,
+      });
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+
+      this.auditService.emitLog(
+        new ErrorLog({
+          logId,
+          message: error.message,
+          payload: JSON.stringify(dto, stringUtils.maskFn),
+          action: APP_ACTION.SEND_EMAIL,
+        }),
+      );
+
+      return generateInternalServerResult();
     }
-
-    const otpCode = generateOtpCode();
-
-    await this.cacheService.set(
-      otpCacheKey(user.id, APP_ACTION.REGISTER),
-      otpCode,
-      {
-        policy: SET_CACHE_POLICY.WITH_TTL,
-        value: TTL_10_MINUTES,
-      },
-    );
-
-    this.emailService.send({
-      to: user.email,
-      subject: this.getEmailSubject('Verify your email'),
-      content: {
-        username: user.username,
-        passCode: otpCode,
-      },
-      templatePath: EMAIL_TEMPLATE.EMAIL_VERIFICATION,
-    });
-
-    return {
-      success: true,
-    };
   }
 
   public async verifyOTP(
     logId: string,
     dto: VerifyOtpDTO,
   ): Promise<OperationResult> {
-    const user = await this.userService.findByID(dto.userId);
+    try {
+      const user = await this.userService.findByID(dto.userId);
 
-    if (!user) {
-      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
+      if (!user) {
+        return generateNotFoundResult(
+          'User not found',
+          ERR_CODE.USER_NOT_FOUND,
+        );
+      }
+
+      const cacheKey = otpCacheKey(user.id, dto.action);
+      const cachedOtp = await this.cacheService.get(cacheKey);
+
+      if (!cachedOtp) {
+        return generateForbiddenResult('OTP expired', ERR_CODE.INVALID_OTP);
+      }
+
+      if (cachedOtp !== dto.code) {
+        return generateForbiddenResult('Invalid OTP', ERR_CODE.INVALID_OTP);
+      }
+
+      await this.cacheService.del(cacheKey);
+
+      if (dto.action === APP_ACTION.REGISTER) {
+        await this.userService.updateByID(user.id, {
+          status: ENTITY_STATUS.ACTIVE,
+        });
+      }
+
+      return {
+        success: true,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+
+      this.auditService.emitLog(
+        new ErrorLog({
+          logId,
+          message: error.message,
+          payload: JSON.stringify(dto, stringUtils.maskFn),
+          action: APP_ACTION.REGISTER,
+        }),
+      );
+
+      return generateInternalServerResult();
     }
-
-    const cacheKey = otpCacheKey(user.id, dto.action);
-    const cachedOtp = await this.cacheService.get(cacheKey);
-
-    if (!cachedOtp) {
-      return generateForbiddenResult('OTP expired', ERR_CODE.INVALID_OTP);
-    }
-
-    if (cachedOtp !== dto.code) {
-      return generateForbiddenResult('Invalid OTP', ERR_CODE.INVALID_OTP);
-    }
-
-    await this.cacheService.del(cacheKey);
-
-    if (dto.action === APP_ACTION.REGISTER) {
-      await this.userService.updateByID(user.id, {
-        status: ENTITY_STATUS.ACTIVE,
-      });
-    }
-
-    return {
-      success: true,
-    };
   }
 
   public async login(

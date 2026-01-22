@@ -46,6 +46,10 @@ export const APP_ACTION = {
   SEND_EMAIL: 'SEND_EMAIL'.toLowerCase(),
 };
 
+export enum VERIFY_OTP_ACTION {
+  REGISTER = 'register',
+}
+
 export enum SOCIAL_PROVIDER {
   GOOGLE = 'google',
 }

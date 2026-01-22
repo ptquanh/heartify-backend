@@ -2,7 +2,6 @@ import {
   IsAlphanumeric,
   IsEmail,
   IsEnum,
-  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -15,7 +14,11 @@ import { OperationResult } from 'mvc-common-toolkit';
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { APP_ACTION, ERR_CODE, SOCIAL_PROVIDER } from '@shared/constants';
+import {
+  ERR_CODE,
+  SOCIAL_PROVIDER,
+  VERIFY_OTP_ACTION,
+} from '@shared/constants';
 import {
   OnlyTextAndNumbers,
   TrimAndLowercase,
@@ -69,12 +72,13 @@ export class VerifyOtpDTO {
   code: string;
 
   @ApiProperty({
-    description: 'The app action',
+    description: 'The verify OTP action',
+    enum: VERIFY_OTP_ACTION,
+    example: VERIFY_OTP_ACTION.REGISTER,
   })
   @IsNotEmpty()
-  @IsString()
-  @IsIn([APP_ACTION.REGISTER])
-  action: string;
+  @IsEnum(VERIFY_OTP_ACTION)
+  action: VERIFY_OTP_ACTION;
 }
 
 export class ResendEmailDTO {
