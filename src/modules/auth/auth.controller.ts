@@ -3,7 +3,7 @@ import { HttpResponse, stringUtils } from 'mvc-common-toolkit';
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { User } from '@modules/user/user.entity';
+import { User } from '@modules/user/entities/user.entity';
 
 import {
   ApiOperationError,

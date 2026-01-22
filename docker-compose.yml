@@ -99,6 +99,7 @@ services:
 
 networks:
   heartify-network:
+    name: heartify-network
     driver: bridge
 
 volumes:

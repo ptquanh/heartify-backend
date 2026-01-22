@@ -13,11 +13,9 @@ export interface RunnerUser {
 }
 
 export interface AppRequest extends Request {
-  id: string;
-  user: any;
-  partner: any;
-  startTime: Date;
+  context: RequestContextData;
 }
+
 export interface UserAuthProfile {
   id: string;
   email: string;
@@ -31,4 +29,11 @@ export interface UserAuthSocialProfile {
   accessToken?: string;
   refreshToken?: string;
   referrerCode?: string;
+}
+
+export interface RequestContextData {
+  user?: UserAuthProfile;
+  trace: string;
+  span: string;
+  parentSpan?: string;
 }

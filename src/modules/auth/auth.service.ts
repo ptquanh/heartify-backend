@@ -16,7 +16,7 @@ import { JwtService } from '@nestjs/jwt';
 import { EmailService } from '@modules/email/email.service';
 import { UserSocialAccount } from '@modules/user-social-account/user-social-account.entity';
 import { UserSocialAccountService } from '@modules/user-social-account/user-social-account.service';
-import { User } from '@modules/user/user.entity';
+import { User } from '@modules/user/entities/user.entity';
 import { UserService } from '@modules/user/user.service';
 
 import { otpCacheKey, resetPasswordCacheKey } from '@shared/cache-key';
@@ -77,7 +77,7 @@ export class AuthService {
   }
 
   protected getEmailSubject(content: string): string {
-    return `[${this.configService.get(ENV_KEY.SERVICE_NAME, 'Heartify')}] - ${content}`;
+    return `[${this.configService.get(ENV_KEY.APP_NAME, 'HEARTIFY').toUpperCase()}] - ${content}`;
   }
 
   protected resetPasswordUrl(email: string, otpCode: string): string {

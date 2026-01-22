@@ -12,8 +12,8 @@ import {
 } from '@shared/helpers/operation-result.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
+import { User } from './entities/user.entity';
 import { VerifyUniquenessUserDTO } from './user.dto';
-import { User } from './user.entity';
 
 @Injectable()
 export class UserService extends BaseCRUDService<User> {

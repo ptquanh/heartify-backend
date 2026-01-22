@@ -1,0 +1,47 @@
+Table users {
+    id uuid [pk, default: `gen_random_uuid()`]
+    username varchar(50) [unique, not null]
+    email varchar(100) [unique, not null]
+    created_at timestamp [default: `now()`]
+    updated_at timestamp [default: `now()`]
+    deleted_at timestamp [null]
+}
+
+Table user_profiles {
+    id uuid [pk, default: `gen_random_uuid()`]
+    user_id uuid [ref: > users.id, not null]
+    first_name varchar(50) [not null]
+    last_name varchar(50) [not null]
+    bio text [null]
+    created_at timestamp [default: `now()`]
+    updated_at timestamp [default: `now()`]
+}
+
+Table heath_records {
+    id uuid [pk, default: `gen_random_uuid()`]
+    user_id uuid [ref: > users.id, not null]
+    record_date date [not null]
+    description text [not null]
+    created_at timestamp [default: `now()`]
+    updated_at timestamp [default: `now()`]
+}
+
+Table appointments {
+    id uuid [pk, default: `gen_random_uuid()`]
+    user_id uuid [ref: > users.id, not null]
+    appointment_date timestamp [not null]
+    reason text [not null]
+    created_at timestamp [default: `now()`]
+    updated_at timestamp [default: `now()`]
+}
+
+Table medications {
+    id uuid [pk, default: `gen_random_uuid()`]
+    user_id uuid [ref: > users.id, not null]
+    medication_name varchar(100) [not null]
+    dosage varchar(50) [not null]
+    start_date date [not null]
+    end_date date [null]
+    created_at timestamp [default: `now()`]
+    updated_at timestamp [default: `now()`]
+}

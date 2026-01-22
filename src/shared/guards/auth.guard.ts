@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { User } from '@modules/user/user.entity';
+import { User } from '@modules/user/entities/user.entity';
 import { UserService } from '@modules/user/user.service';
 
 import { ENTITY_STATUS } from '@shared/constants';
