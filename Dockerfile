@@ -24,6 +24,7 @@ ENV NODE_ENV=development
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
+COPY --from=builder /app/templates ./templates
 
 # Expose the application port
 EXPOSE 3030
