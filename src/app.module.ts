@@ -11,6 +11,7 @@ import { EmailModule } from '@modules/email/email.module';
 import { GlobalModule } from '@modules/global/global.module';
 import { OpikModule } from '@modules/opik/opik.module';
 import { TestOpikModule } from '@modules/test-opik/test-opik.module';
+import { CloudinaryModule } from '@modules/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { TestOpikModule } from '@modules/test-opik/test-opik.module';
     AuthModule,
     TestOpikModule,
     DiagnosisModule,
+    CloudinaryModule
   ],
 })
 export class AppModule {}
