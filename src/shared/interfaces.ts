@@ -37,3 +37,18 @@ export interface RequestContextData {
   span: string;
   parentSpan?: string;
 }
+
+export type WeightUnit = 'kg' | 'lb';
+export type HeightUnit = 'cm' | 'inch';
+
+export interface BodyMetrics {
+  weight?: {
+    value: number;
+    unit: WeightUnit;
+  };
+  height?: {
+    value: number;
+    unit: HeightUnit;
+  };
+  bmi?: number;
+}

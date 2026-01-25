@@ -6,10 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuditModule } from '@modules/audit/audit.module';
 import { AuthModule } from '@modules/auth/auth.module';
-import { DiagnosisModule } from '@modules/diagnosis/diagnosis.module';
 import { EmailModule } from '@modules/email/email.module';
 import { GlobalModule } from '@modules/global/global.module';
+import { HealthRecordModule } from '@modules/health-record/health-record.module';
 import { OpikModule } from '@modules/opik/opik.module';
+import { RiskAssessmentModule } from '@modules/risk-assessment/risk-assessment.module';
 import { TestOpikModule } from '@modules/test-opik/test-opik.module';
 
 @Module({
@@ -42,7 +43,8 @@ import { TestOpikModule } from '@modules/test-opik/test-opik.module';
     EmailModule,
     AuthModule,
     TestOpikModule,
-    DiagnosisModule,
+    RiskAssessmentModule,
+    HealthRecordModule,
   ],
 })
 export class AppModule {}

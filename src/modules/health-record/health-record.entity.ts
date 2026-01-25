@@ -4,14 +4,18 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { AuditWithTimezone } from '@modules/audit/audit.entity';
+import {
+  HealthRiskFactor,
+  RiskAssessmentAlgorithm,
+  RiskLevel,
+} from '@modules/risk-assessment/risk-assessment.constants';
 import { User } from '@modules/user/entities/user.entity';
 
-import { DiagnosisAssessment } from './diagnosis-assessment.entity';
+import { BodyMetrics } from '@shared/interfaces';
 
 @Entity('health_records')
 @Index('idx_health_history', ['userId', 'recordedAt'])
@@ -23,7 +27,7 @@ export class HealthRecord extends AuditWithTimezone {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ name: 'user_id', nullable: true })
+  @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
   @Column({
@@ -33,23 +37,33 @@ export class HealthRecord extends AuditWithTimezone {
   })
   recordedAt: Date;
 
-  @Column({ type: 'varchar', length: 10 })
-  gender: string;
-
   @Column({ name: 'age_at_record', type: 'integer' })
   ageAtRecord: number;
 
-  // Clinical Metrics (Plaintext as requested)
   @Column({ name: 'systolic_bp', type: 'integer' })
   systolicBp: number;
 
-  @Column({ name: 'diastolic_bp', type: 'integer', nullable: true })
+  @Column({
+    name: 'diastolic_bp',
+    type: 'integer',
+    nullable: true,
+  })
   diastolicBp: number;
 
-  @Column({ name: 'total_cholesterol', type: 'integer' })
+  @Column({
+    name: 'total_cholesterol',
+    type: 'decimal',
+    precision: 6,
+    scale: 2,
+  })
   totalCholesterol: number;
 
-  @Column({ name: 'hdl_cholesterol', type: 'integer' })
+  @Column({
+    name: 'hdl_cholesterol',
+    type: 'decimal',
+    precision: 6,
+    scale: 2,
+  })
   hdlCholesterol: number;
 
   @Column({ name: 'is_smoker', type: 'boolean', default: false })
@@ -62,17 +76,48 @@ export class HealthRecord extends AuditWithTimezone {
   isTreatedHypertension: boolean;
 
   @Column({
-    name: 'weight_kg',
+    name: 'measurements',
+    type: 'jsonb',
+    nullable: true,
+  })
+  measurements: BodyMetrics;
+
+  @Column({
+    name: 'risk_level',
+    type: 'varchar',
+    length: 50,
+  })
+  riskLevel: RiskLevel;
+
+  @Column({
+    name: 'risk_score',
+    type: 'decimal',
+    precision: 10,
+    scale: 4,
+    nullable: true,
+  })
+  riskScore: number;
+
+  @Column({
+    name: 'risk_percentage',
     type: 'decimal',
     precision: 5,
     scale: 2,
     nullable: true,
   })
-  weightKg: number;
+  riskPercentage: number;
 
-  @Column({ name: 'height_cm', type: 'integer', nullable: true })
-  heightCm: number;
+  @Column({
+    name: 'risk_algorithm',
+    type: 'varchar',
+    length: 50,
+  })
+  riskAlgorithm: RiskAssessmentAlgorithm;
 
-  @OneToMany(() => DiagnosisAssessment, (assessment) => assessment.healthRecord)
-  diagnosisAssessments: DiagnosisAssessment[];
+  @Column({
+    name: 'identified_risk_factors',
+    type: 'jsonb',
+    nullable: true,
+  })
+  identifiedRiskFactors: HealthRiskFactor[];
 }

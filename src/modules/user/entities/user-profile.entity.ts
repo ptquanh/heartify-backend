@@ -7,6 +7,9 @@ import {
 } from 'typeorm';
 
 import { AuditWithTimezone } from '@modules/audit/audit.entity';
+import { Gender } from '@modules/risk-assessment/risk-assessment.constants';
+
+import { BodyMetrics } from '@shared/interfaces';
 
 import { User } from './user.entity';
 
@@ -19,21 +22,27 @@ export class UserProfile extends AuditWithTimezone {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ name: 'user_id', type: 'varchar' })
+  @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
-  @Column({ name: 'encrypted_full_name', type: 'varchar' })
-  encryptedFullName: string;
+  @Column({ name: 'date_of_birth', type: 'date' })
+  dateOfBirth: Date;
 
-  @Column({ name: 'encrypted_phone', type: 'varchar', nullable: true })
-  encryptedPhone: string;
+  @Column({
+    name: 'gender',
+    type: 'enum',
+    enum: Gender,
+    default: Gender.MALE,
+  })
+  gender: Gender;
 
-  @Column({ name: 'email_hash', type: 'varchar', length: 64, unique: true })
-  emailHash: string;
+  @Column({
+    name: 'latest_measurements',
+    type: 'jsonb',
+    nullable: true,
+  })
+  latestMeasurements: BodyMetrics;
 
-  @Column({ name: 'encrypted_email', type: 'varchar' })
-  encryptedEmail: string;
-
-  @Column({ name: 'encryption_version', type: 'smallint', default: 1 })
-  encryptionVersion: number;
+  @Column({ name: 'country', type: 'varchar', length: 3 })
+  country: string;
 }

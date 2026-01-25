@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 import { AuditWithTimezone } from '@modules/audit/audit.entity';
-import { HealthRecord } from '@modules/diagnosis/entities/health-record.entity';
+import { HealthRecord } from '@modules/health-record/health-record.entity';
 
 import { ENTITY_STATUS } from '@shared/constants';
 

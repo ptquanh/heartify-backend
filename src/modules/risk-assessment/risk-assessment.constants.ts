@@ -1,3 +1,42 @@
+export const ASCVD_COEFFICIENTS = {
+  male: {
+    lnAge: 17.114,
+    lnTotalChol: 0.94,
+    lnHdl: -18.92,
+    lnTreatedSbp: 29.291,
+    lnUntreatedSbp: 27.82,
+    smoker: 0.691,
+    diabetes: 0.874,
+    interaction: {
+      lnAge_lnTotalChol: -3.862,
+      lnAge_lnHdl: 4.475,
+      lnAge_smoker: 0, // Simplified or specific to race. Some equations have it.
+      lnAge_treatedSbp: -6.087,
+      lnAge_untreatedSbp: -6.087,
+    },
+    baselineSurvival: 0.9533, // Example for 10-year
+    meanSum: 61.18,
+  },
+  female: {
+    lnAge: -29.799,
+    lnTotalChol: 13.54,
+    lnHdl: -13.578,
+    lnTreatedSbp: 2.019,
+    lnUntreatedSbp: 1.957,
+    smoker: 7.574,
+    diabetes: 0.661,
+    interaction: {
+      lnAge_lnTotalChol: -3.114,
+      lnAge_lnHdl: 3.149,
+      lnAge_smoker: -1.665,
+      lnAge_treatedSbp: 0,
+      lnAge_untreatedSbp: 0,
+    },
+    baselineSurvival: 0.9665,
+    meanSum: -29.18,
+  },
+};
+
 export const FRAMINGHAM_POINTS = {
   MEN: {
     AGE: {
@@ -106,7 +145,7 @@ export const FRAMINGHAM_POINTS = {
       '23': '22',
       '24': '27',
       '25': '>=30',
-      '>25': '>=30', // Approximate high end
+      '>25': '>=30',
     },
   },
   WOMEN: {
@@ -212,7 +251,47 @@ export const FRAMINGHAM_POINTS = {
   },
 };
 
-export const GENDER = {
-  MALE: 'Male',
-  FEMALE: 'Female',
-};
+export enum RiskLevel {
+  LOW = 'low',
+  BORDERLINE = 'borderline',
+  MODERATE = 'moderate',
+  HIGH = 'high',
+  HIGH_LIFETIME = 'high_lifetime',
+  LOW_LIFETIME = 'low_lifetime',
+}
+
+export enum RiskAssessmentAlgorithm {
+  YOUTH_LIFETIME = 'youth_lifetime',
+  ASCVD = 'ascvd',
+  FRAMINGHAM = 'framingham',
+}
+
+export const MolecularWeightOfCholesterol = 38.67;
+
+export const ACC_AHA_TREATMENT_THRESHOLD = 7.5;
+
+export enum HealthRiskFactor {
+  SMOKER = 'smoker',
+  DIABETIC = 'diabetic',
+  TREATED_HYPERTENSION = 'treated_hypertension',
+  HIGH_SYSTOLIC_BP = 'high_systolic_bp',
+  HIGH_CHOLESTEROL = 'high_cholesterol',
+  OBESITY = 'obesity',
+  LOW_HDL = 'low_hdl',
+  AGE_RISK = 'age_risk',
+}
+
+export enum Unit {
+  MMOL_L = 'mmol/L',
+  MG_DL = 'mg/dL',
+}
+
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female',
+}
+
+export enum HypertensionState {
+  UNTREATED = 'untreated',
+  TREATED = 'treated',
+}
