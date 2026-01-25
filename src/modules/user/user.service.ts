@@ -8,12 +8,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ERR_CODE } from '@shared/constants';
 import {
   generateConflictResult,
+  generateNotFoundResult,
   generateSuccessResult,
 } from '@shared/helpers/operation-result.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
+import { UserProfile } from './entities/user-profile.entity';
 import { User } from './entities/user.entity';
-import { VerifyUniquenessUserDTO } from './user.dto';
+import { UpdateUserProfileDto, VerifyUniquenessUserDTO } from './user.dto';
 
 @Injectable()
 export class UserService extends BaseCRUDService<User> {
@@ -22,6 +24,9 @@ export class UserService extends BaseCRUDService<User> {
   constructor(
     @InjectRepository(User)
     protected repo: Repository<User>,
+
+    @InjectRepository(UserProfile)
+    protected profileRepo: Repository<UserProfile>,
   ) {
     super(repo);
   }
@@ -38,15 +43,56 @@ export class UserService extends BaseCRUDService<User> {
     return age;
   }
 
+  public async getProfile(userId: string): Promise<OperationResult<User>> {
+    const user = await this.findOne(
+      { id: userId },
+      { relations: { profile: true } },
+    );
+
+    if (!user) {
+      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
+    }
+
+    return generateSuccessResult(user);
+  }
+
+  public async updateProfile(
+    userId: string,
+    dto: UpdateUserProfileDto,
+  ): Promise<OperationResult<UserProfile>> {
+    const user = await this.findOne(
+      { id: userId },
+      { relations: { profile: true } },
+    );
+
+    if (!user) {
+      return generateNotFoundResult('User not found', ERR_CODE.USER_NOT_FOUND);
+    }
+
+    let profile = user.profile;
+
+    if (!profile) {
+      profile = this.profileRepo.create({
+        userId,
+      });
+    }
+
+    Object.assign(profile, dto);
+
+    const saved = await this.profileRepo.save(profile);
+
+    return generateSuccessResult(saved);
+  }
+
   public async verifyUniquenessUser(
     dto: Partial<VerifyUniquenessUserDTO>,
   ): Promise<OperationResult> {
     const { email, username } = dto;
 
     if (email) {
-      const existsEmail = await this.findOne({ email });
+      const count = await this.count({ email });
 
-      if (existsEmail) {
+      if (count > 0) {
         return generateConflictResult(
           'Email already exists',
           ERR_CODE.EMAIL_ALREADY_EXISTS,
@@ -55,9 +101,9 @@ export class UserService extends BaseCRUDService<User> {
     }
 
     if (username) {
-      const existsUsername = await this.findOne({ username });
+      const count = await this.count({ username });
 
-      if (existsUsername) {
+      if (count > 0) {
         return generateConflictResult(
           'Username already exists',
           ERR_CODE.USERNAME_ALREADY_EXISTS,
