@@ -83,13 +83,15 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
+    "rootDir": ".",
+    "testRegex": "src/.*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "moduleNameMapper": {
-      "^src/(.*)$": "<rootDir>/$1",
+      "^src/(.*)$": "<rootDir>/src/$1",
+      "^@modules/(.*)$": "<rootDir>/src/modules/$1",
+      "^@shared/(.*)$": "<rootDir>/src/shared/$1",
       "^opik$": "<rootDir>/src/shared/mocks/opik.mock.ts"
     },
     "transformIgnorePatterns": [

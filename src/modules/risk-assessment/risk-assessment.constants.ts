@@ -1,5 +1,50 @@
+export enum RiskLevel {
+  LOW = 'low',
+  BORDERLINE = 'borderline',
+  MODERATE = 'moderate',
+  HIGH = 'high',
+  HIGH_LIFETIME = 'high_lifetime',
+  LOW_LIFETIME = 'low_lifetime',
+}
+
+export enum RiskAssessmentAlgorithm {
+  YOUTH_LIFETIME = 'youth_lifetime',
+  ASCVD = 'ascvd',
+  FRAMINGHAM = 'framingham',
+}
+
+export const MolecularWeightOfCholesterol = 38.67;
+
+export const ACC_AHA_TREATMENT_THRESHOLD = 7.5;
+
+export enum HealthRiskFactor {
+  SMOKER = 'smoker',
+  DIABETIC = 'diabetic',
+  TREATED_HYPERTENSION = 'treated_hypertension',
+  HIGH_SYSTOLIC_BP = 'high_systolic_bp',
+  HIGH_CHOLESTEROL = 'high_cholesterol',
+  OBESITY = 'obesity',
+  LOW_HDL = 'low_hdl',
+  AGE_RISK = 'age_risk',
+}
+
+export enum Unit {
+  MMOL_L = 'mmol/L',
+  MG_DL = 'mg/dL',
+}
+
+export enum Gender {
+  MALE = 'male',
+  FEMALE = 'female',
+}
+
+export enum HypertensionState {
+  UNTREATED = 'untreated',
+  TREATED = 'treated',
+}
+
 export const ASCVD_COEFFICIENTS = {
-  male: {
+  [Gender.MALE]: {
     lnAge: 17.114,
     lnTotalChol: 0.94,
     lnHdl: -18.92,
@@ -10,14 +55,14 @@ export const ASCVD_COEFFICIENTS = {
     interaction: {
       lnAge_lnTotalChol: -3.862,
       lnAge_lnHdl: 4.475,
-      lnAge_smoker: 0, // Simplified or specific to race. Some equations have it.
+      lnAge_smoker: 0,
       lnAge_treatedSbp: -6.087,
       lnAge_untreatedSbp: -6.087,
     },
-    baselineSurvival: 0.9533, // Example for 10-year
+    baselineSurvival: 0.9533,
     meanSum: 61.18,
   },
-  female: {
+  [Gender.FEMALE]: {
     lnAge: -29.799,
     lnTotalChol: 13.54,
     lnHdl: -13.578,
@@ -102,14 +147,14 @@ export const FRAMINGHAM_POINTS = {
       '<40': 2,
     },
     SYSTOLIC_BP: {
-      UNTREATED: {
+      [HypertensionState.UNTREATED]: {
         '<120': 0,
         '120-129': 0,
         '130-139': 1,
         '140-159': 1,
         '>=160': 2,
       },
-      TREATED: {
+      [HypertensionState.TREATED]: {
         '<120': 0,
         '120-129': 1,
         '130-139': 2,
@@ -211,15 +256,16 @@ export const FRAMINGHAM_POINTS = {
       '40-49': 1,
       '<40': 2,
     },
+    // FIX HERE: Tương tự cho Nữ
     SYSTOLIC_BP: {
-      UNTREATED: {
+      [HypertensionState.UNTREATED]: {
         '<120': 0,
         '120-129': 1,
         '130-139': 2,
         '140-159': 3,
         '>=160': 4,
       },
-      TREATED: {
+      [HypertensionState.TREATED]: {
         '<120': 0,
         '120-129': 3,
         '130-139': 4,
@@ -250,48 +296,3 @@ export const FRAMINGHAM_POINTS = {
     },
   },
 };
-
-export enum RiskLevel {
-  LOW = 'low',
-  BORDERLINE = 'borderline',
-  MODERATE = 'moderate',
-  HIGH = 'high',
-  HIGH_LIFETIME = 'high_lifetime',
-  LOW_LIFETIME = 'low_lifetime',
-}
-
-export enum RiskAssessmentAlgorithm {
-  YOUTH_LIFETIME = 'youth_lifetime',
-  ASCVD = 'ascvd',
-  FRAMINGHAM = 'framingham',
-}
-
-export const MolecularWeightOfCholesterol = 38.67;
-
-export const ACC_AHA_TREATMENT_THRESHOLD = 7.5;
-
-export enum HealthRiskFactor {
-  SMOKER = 'smoker',
-  DIABETIC = 'diabetic',
-  TREATED_HYPERTENSION = 'treated_hypertension',
-  HIGH_SYSTOLIC_BP = 'high_systolic_bp',
-  HIGH_CHOLESTEROL = 'high_cholesterol',
-  OBESITY = 'obesity',
-  LOW_HDL = 'low_hdl',
-  AGE_RISK = 'age_risk',
-}
-
-export enum Unit {
-  MMOL_L = 'mmol/L',
-  MG_DL = 'mg/dL',
-}
-
-export enum Gender {
-  MALE = 'male',
-  FEMALE = 'female',
-}
-
-export enum HypertensionState {
-  UNTREATED = 'untreated',
-  TREATED = 'treated',
-}
