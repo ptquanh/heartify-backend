@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuditModule } from '@modules/audit/audit.module';
 import { AuthModule } from '@modules/auth/auth.module';
+import { CloudinaryModule } from '@modules/cloudinary/cloudinary.module';
 import { EmailModule } from '@modules/email/email.module';
 import { GlobalModule } from '@modules/global/global.module';
 import { HealthRecordModule } from '@modules/health-record/health-record.module';
@@ -45,6 +46,7 @@ import { TestOpikModule } from '@modules/test-opik/test-opik.module';
     TestOpikModule,
     RiskAssessmentModule,
     HealthRecordModule,
+    CloudinaryModule,
   ],
 })
 export class AppModule {}
