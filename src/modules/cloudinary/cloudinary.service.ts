@@ -1,36 +1,41 @@
-import { Injectable } from '@nestjs/common';
 import { v2 as cloudinary } from 'cloudinary';
-import { ConfigService } from '@nestjs/config';
-import { ENV_KEY } from '@shared/constants';
+import { OperationResult } from 'mvc-common-toolkit';
+
+import { Inject, Injectable } from '@nestjs/common';
+
+import { INJECTION_TOKEN } from '@shared/constants';
+import { generateSuccessResult } from '@shared/helpers/operation-result.helper';
+
+import { GetSignatureDto } from './cloudinary.dto';
 
 @Injectable()
 export class CloudinaryService {
-  constructor() {
-    cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    //   cloud_name: ConfigService.get(ENV_KEY.CLOUDINARY_CLOUD_NAME),
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
-  }
+  constructor(
+    @Inject(INJECTION_TOKEN.CLOUDINARY_SERVICE)
+    private readonly cloudinaryService: typeof cloudinary,
+  ) {}
 
-  signUpload(folder = 'uploads') {
-    const timestamp = Math.round(Date.now() / 1000);
+  getUploadSignature(dto: GetSignatureDto): OperationResult {
+    const timestamp = Math.round(new Date().getTime() / 1000);
 
-    const signature = cloudinary.utils.api_sign_request(
-      {
-        timestamp,
-        folder,
-      },
-      process.env.CLOUDINARY_API_SECRET!,
+    const apiSecret = this.cloudinaryService.config().api_secret;
+
+    const paramsToSign = {
+      timestamp,
+      folder: dto.folder,
+    };
+
+    const signature = this.cloudinaryService.utils.api_sign_request(
+      paramsToSign,
+      apiSecret,
     );
 
-    return {
-      timestamp,
+    return generateSuccessResult({
+      folder: dto.folder,
       signature,
-      apiKey: process.env.CLOUDINARY_API_KEY,
-      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
-      folder,
-    };
+      timestamp,
+      cloudName: this.cloudinaryService.config().cloud_name,
+      apiKey: this.cloudinaryService.config().api_key,
+    });
   }
 }

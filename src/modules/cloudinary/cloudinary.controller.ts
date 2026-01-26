@@ -1,36 +1,34 @@
-import {
-  Controller,
-  Get,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { HttpResponse } from 'mvc-common-toolkit';
 
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import {
+  ApiOperationError,
+  ApiOperationSuccess,
+} from '@shared/decorators/api-response';
+import { AuthGuard } from '@shared/guards/auth.guard';
+
+import { GetSignatureDto, GetSignatureResponseDto } from './cloudinary.dto';
 import { CloudinaryService } from './cloudinary.service';
-// import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@ApiTags('Cloudinary')
 @ApiBearerAuth()
+@ApiTags('Cloudinary')
 @Controller('cloudinary')
+@UseGuards(AuthGuard)
+@ApiOperationError()
 export class CloudinaryController {
-  constructor(
-    private readonly cloudinaryService: CloudinaryService,
-  ) {}
+  constructor(private readonly cloudinaryService: CloudinaryService) {}
 
+  @Get('signature')
   @ApiOperation({
-    summary: 'Get signed upload params for Cloudinary',
+    summary: 'Get Upload Signature',
+    description: 'Get upload signature for Cloudinary',
   })
-  // @UseGuards(JwtAuthGuard) // bật khi có auth
-  @Get('sign-upload')
-  signUpload(
-    @Query('folder') folder?: string,
-  ) {
-    return this.cloudinaryService.signUpload(
-      folder || 'uploads',
-    );
+  @ApiOperationSuccess(GetSignatureResponseDto)
+  getSignature(
+    @Query() dto: GetSignatureDto,
+  ): HttpResponse<GetSignatureResponseDto> {
+    return this.cloudinaryService.getUploadSignature(dto);
   }
 }
