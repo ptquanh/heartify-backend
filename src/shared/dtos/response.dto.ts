@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { ERR_CODE } from '@shared/constants';
 
@@ -9,6 +9,12 @@ export class SuccessResponseDTO<T> {
 
   @ApiProperty()
   data: T;
+
+  @ApiPropertyOptional({ example: 'Success' })
+  message?: string;
+
+  @ApiPropertyOptional({ example: HttpStatus.OK })
+  httpCode?: number;
 }
 
 export class ErrorResponseDTO {
