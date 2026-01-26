@@ -8,6 +8,7 @@ import {
   ApiOperationSuccess,
 } from '@shared/decorators/api-response';
 import { AuthGuard } from '@shared/guards/auth.guard';
+import { ApplyRateLimiting } from '@shared/interceptors/rate-limiting.interceptor';
 
 import { GetSignatureDto, GetSignatureResponseDto } from './cloudinary.dto';
 import { CloudinaryService } from './cloudinary.service';
@@ -25,6 +26,7 @@ export class CloudinaryController {
     summary: 'Get Upload Signature',
     description: 'Get upload signature for Cloudinary',
   })
+  @ApplyRateLimiting(10)
   @ApiOperationSuccess(GetSignatureResponseDto)
   getSignature(
     @Query() dto: GetSignatureDto,

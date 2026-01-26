@@ -4,6 +4,7 @@ import { OperationResult } from 'mvc-common-toolkit';
 import { Inject, Injectable } from '@nestjs/common';
 
 import { INJECTION_TOKEN } from '@shared/constants';
+import { TTL_5_MINUTES } from '@shared/helpers/cache-ttl.helper';
 import { generateSuccessResult } from '@shared/helpers/operation-result.helper';
 
 import { GetSignatureDto } from './cloudinary.dto';
@@ -23,6 +24,8 @@ export class CloudinaryService {
     const paramsToSign = {
       timestamp,
       folder: dto.folder,
+      expire_at: timestamp + TTL_5_MINUTES,
+      upload_preset: 'user_limited',
     };
 
     const signature = this.cloudinaryService.utils.api_sign_request(
