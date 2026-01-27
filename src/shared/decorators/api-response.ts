@@ -15,21 +15,37 @@ import {
 import { ERR_CODE } from '@shared/constants';
 import { SuccessResponseDTO } from '@shared/dtos/response.dto';
 
-export function ApiOperationSuccess<T>(model?: Type<T>) {
+export function ApiOperationSuccess<T>(
+  model?: Type<T>,
+  isPagination: boolean = false,
+) {
   return applyDecorators(
     model
       ? ApiExtraModels(SuccessResponseDTO, model)
       : ApiExtraModels(SuccessResponseDTO),
-
     ApiOkResponse({
       schema: {
         allOf: [
           { $ref: getSchemaPath(SuccessResponseDTO) },
           {
             properties: {
-              data: model
-                ? { $ref: getSchemaPath(model) }
-                : { type: 'string', example: '', default: '' },
+              data: isPagination
+                ? {
+                    type: 'array',
+                    items: model
+                      ? { $ref: getSchemaPath(model) }
+                      : { type: 'string' },
+                  }
+                : model
+                  ? { $ref: getSchemaPath(model) }
+                  : { type: 'string', example: '', default: '' },
+              ...(isPagination
+                ? {
+                    total: { type: 'number', example: 100 },
+                    limit: { type: 'number', example: 10 },
+                    offset: { type: 'number', example: 0 },
+                  }
+                : {}),
             },
           },
         ],

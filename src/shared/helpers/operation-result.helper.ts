@@ -75,7 +75,8 @@ export const generateUnprocessableEntityResult = (
 
 export const generateEmptyPaginationResult = (): OperationResult => ({
   success: true,
-  data: { rows: [], total: 0 },
+  data: { rows: [], total: 0, offset: 0, limit: 0 },
+  httpCode: HttpStatus.OK,
 });
 
 export const generateSuccessResult = (
@@ -91,4 +92,22 @@ export const generateSuccessResult = (
 export const generateEmptyPaginationData = (): Partial<PaginationResult> => ({
   rows: [],
   total: 0,
+  offset: 0,
+  limit: 0,
+});
+
+export const generatePaginationResult = <T>(
+  rows: T[],
+  total: number,
+  offset: number,
+  limit: number,
+): OperationResult<PaginationResult<T>> => ({
+  success: true,
+  data: {
+    rows,
+    total,
+    offset,
+    limit,
+  },
+  httpCode: HttpStatus.OK,
 });
