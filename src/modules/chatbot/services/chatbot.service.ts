@@ -19,6 +19,7 @@ import {
 import { PaginationResult } from '@shared/interfaces';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
+import { ChatMessage } from './chat-message.entity';
 import {
   CHATBOT_MODEL,
   CHATBOT_PROMPT,
@@ -27,7 +28,6 @@ import {
   RESPONSE_FORMAT,
   TEMPERATURE,
 } from './chatbot.constant';
-import { ChatMessage } from './entities/chat-message.entity';
 
 @Injectable()
 export class ChatbotService extends BaseCRUDService<ChatMessage> {

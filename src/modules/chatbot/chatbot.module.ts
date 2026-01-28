@@ -9,10 +9,10 @@ import { UserModule } from '@modules/user/user.module';
 
 import { ENV_KEY, INJECTION_TOKEN } from '@shared/constants';
 
+import { ChatMessage } from './chat-message.entity';
 import { ChatbotController } from './chatbot.controller';
-import { ChatbotService } from './chatbot.service';
-import { CronChatbotService } from './cron-chatbot.service';
-import { ChatMessage } from './entities/chat-message.entity';
+import { ChatbotService } from './services/chatbot.service';
+import { CronChatbotService } from './services/cron-chatbot.service';
 
 export const GroqProvider = {
   provide: INJECTION_TOKEN.GROQ_SERVICE,

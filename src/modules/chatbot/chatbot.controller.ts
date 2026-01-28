@@ -15,9 +15,9 @@ import { AuthGuard } from '@shared/guards/auth.guard';
 import { UseCallQueue } from '@shared/interceptors/call-queue.interceptor';
 import { ApplyRateLimiting } from '@shared/interceptors/rate-limiting.interceptor';
 
-import { ChatbotService } from './chatbot.service';
-import { ChatMessagePayloadDTO } from './dtos/chat-message.dto';
-import { ChatMessage } from './entities/chat-message.entity';
+import { ChatMessagePayloadDTO } from './chat-message.dto';
+import { ChatMessage } from './chat-message.entity';
+import { ChatbotService } from './services/chatbot.service';
 
 @ApiTags('Chatbot')
 @ApiBearerAuth()
