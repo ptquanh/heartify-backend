@@ -75,24 +75,28 @@ export function OnlyTextAndNumbers(
     }
 
     if (options?.allowedSymbols) {
-      characterSet += '@\\.\\-\\_\\+';
+      characterSet += '@._+\\-';
     }
 
     if (options?.allowedPunctuation) {
-      characterSet += `.,:;?!'"()\\[\\]\\-–—`;
+      characterSet += `.,:;?!'"()[\\]\\-–—`;
     }
 
     const flags = 'g' + (options.onlyASCII ? '' : 'u');
 
-    const sanitizeRegexp = new RegExp(`[^${characterSet}]`, flags);
+    try {
+      const sanitizeRegexp = new RegExp(`[^${characterSet}]`, flags);
+      const sanitized = value.replace(sanitizeRegexp, '');
 
-    const sanitized = value.replace(sanitizeRegexp, '');
+      if (sanitized !== value && options.throwOnError) {
+        throw new BadRequestException('must only contain text and numbers');
+      }
 
-    if (sanitized !== value && options.throwOnError) {
-      throw new BadRequestException('must only contain text and numbers');
+      return sanitized;
+    } catch (e) {
+      console.error('Regex Error in OnlyTextAndNumbers:', e.message);
+      throw new BadRequestException('Validation configuration error');
     }
-
-    return sanitized;
   });
 }
 
