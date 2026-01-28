@@ -51,6 +51,9 @@ services:
       CLOUDINARY_API_KEY: '${CLOUDINARY_API_KEY}'
       CLOUDINARY_API_SECRET: '${CLOUDINARY_API_SECRET}'
 
+      # Groq
+      GROQ_API_KEY: '${GROQ_API_KEY}'
+
     depends_on:
       postgres:
         condition: service_healthy
