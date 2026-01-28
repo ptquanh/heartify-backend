@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@google/genai": "^1.38.0",
     "@nestjs/axios": "^3.0.2",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.0",
@@ -37,11 +38,13 @@
     "dayjs": "^1.11.13",
     "ejs": "^4.0.1",
     "escape-html": "^1.0.3",
+    "groq-sdk": "^0.37.0",
     "lodash": "^4.17.21",
     "mathjs": "^14.2.0",
     "mvc-common-toolkit": "^1.37.1",
     "nodemailer": "^7.0.12",
     "opik": "^1.9.82",
+    "opik-gemini": "^1.9.101",
     "pg": "^8.14.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",

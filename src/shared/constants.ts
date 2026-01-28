@@ -9,9 +9,11 @@ export const INJECTION_TOKEN = {
   OPIK_SERVICE: Symbol.for('OPIK_SERVICE'),
   MAIL_TRANSPORTER: Symbol.for('MAIL_TRANSPORTER'),
   CLOUDINARY_SERVICE: Symbol.for('CLOUDINARY_SERVICE'),
+  GROQ_SERVICE: Symbol.for('GROQ_SERVICE'),
 };
 
 export const ERR_CODE = {
+  TOO_MANY_REQUESTS: 'TOO_MANY_REQUESTS'.toLowerCase(),
   INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR'.toLowerCase(),
   NOT_FOUND: 'NOT_FOUND'.toLowerCase(),
   BAD_REQUEST: 'BAD_REQUEST'.toLowerCase(),
@@ -34,6 +36,7 @@ export const ERR_CODE = {
   PASSWORD_SAME_AS_OLD: 'PASSWORD_SAME_AS_OLD'.toLowerCase(),
   USER_PROFILE_INCOMPLETE: 'USER_PROFILE_INCOMPLETE'.toLowerCase(),
   RISK_ASSESSMENT_FAILED: 'RISK_ASSESSMENT_FAILED'.toLowerCase(),
+  SYSTEM_BUSY: 'SYSTEM_BUSY'.toLowerCase(),
 };
 
 export const APP_ACTION = {
@@ -96,6 +99,8 @@ export enum ENV_KEY {
   CLOUDINARY_CLOUD_NAME = 'CLOUDINARY_CLOUD_NAME',
   CLOUDINARY_API_KEY = 'CLOUDINARY_API_KEY',
   CLOUDINARY_API_SECRET = 'CLOUDINARY_API_SECRET',
+
+  GROQ_API_KEY = 'GROQ_API_KEY',
 }
 
 export enum METADATA_KEY {
@@ -129,4 +134,14 @@ export enum EMAIL_TEMPLATE {
 
 export enum CLOUDINARY_FOLDER {
   SCAN_HEALTH_RECORD = 'scan-health-record',
+}
+
+export enum CHATBOT_MESSAGE_FORMAT {
+  MARKDOWN = 'markdown',
+}
+
+export enum CHATBOT_MESSAGE_ROLE {
+  USER = 'user',
+  ASSISTANT = 'assistant',
+  SYSTEM = 'system',
 }

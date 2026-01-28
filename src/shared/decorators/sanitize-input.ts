@@ -46,11 +46,13 @@ export function OnlyTextAndNumbers(
     onlyASCII: boolean;
     throwOnError: boolean;
     allowedSymbols?: boolean;
+    allowedPunctuation?: boolean;
   } = {
     includeWhitespaces: true,
     onlyASCII: false,
     throwOnError: true,
     allowedSymbols: false,
+    allowedPunctuation: false,
   },
 ): PropertyDecorator {
   return Transform((params: TransformFnParams) => {
@@ -68,13 +70,16 @@ export function OnlyTextAndNumbers(
     }
 
     let characterSet = options.onlyASCII ? 'a-zA-Z0-9' : '\\p{L}\\p{N}';
-
     if (options?.includeWhitespaces) {
       characterSet += options.onlyASCII ? ' ' : '\\s';
     }
 
     if (options?.allowedSymbols) {
       characterSet += '@\\.\\-\\_\\+';
+    }
+
+    if (options?.allowedPunctuation) {
+      characterSet += `.,:;?!'"()\\[\\]\\-–—`;
     }
 
     const flags = 'g' + (options.onlyASCII ? '' : 'u');

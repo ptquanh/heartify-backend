@@ -4,6 +4,16 @@ import { HttpStatus } from '@nestjs/common';
 
 import { ERR_CODE } from '@shared/constants';
 
+export const generateTooManyRequestsResult = (
+  message?: string,
+  code = ERR_CODE.TOO_MANY_REQUESTS,
+): OperationResult => ({
+  success: false,
+  message: message || 'Too many requests',
+  code,
+  httpCode: HttpStatus.TOO_MANY_REQUESTS,
+});
+
 export const generateUnauthorizedResult = (
   message?: string,
   code = ERR_CODE.UNAUTHORIZED,
