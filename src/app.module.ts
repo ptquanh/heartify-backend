@@ -9,6 +9,7 @@ import { AuthModule } from '@modules/auth/auth.module';
 import { ChatbotModule } from '@modules/chatbot/chatbot.module';
 import { CloudinaryModule } from '@modules/cloudinary/cloudinary.module';
 import { EmailModule } from '@modules/email/email.module';
+import { FoodModule } from '@modules/food/food.module';
 import { GlobalModule } from '@modules/global/global.module';
 import { HealthRecordModule } from '@modules/health-record/health-record.module';
 import { OpikModule } from '@modules/opik/opik.module';
@@ -49,6 +50,7 @@ import { TestOpikModule } from '@modules/test-opik/test-opik.module';
     HealthRecordModule,
     ChatbotModule,
     CloudinaryModule,
+    FoodModule,
   ],
 })
 export class AppModule {}

@@ -17,39 +17,35 @@ import { SuccessResponseDTO } from '@shared/dtos/response.dto';
 
 export function ApiOperationSuccess<T>(
   model?: Type<T>,
-  isPagination: boolean = false,
+  options?: { description?: string; isRaw?: boolean },
 ) {
+  const extraModels = model
+    ? [SuccessResponseDTO, model]
+    : [SuccessResponseDTO];
+
+  const schemaReference =
+    options?.isRaw && model
+      ? { $ref: getSchemaPath(model) }
+      : model
+        ? {
+            allOf: [
+              { $ref: getSchemaPath(SuccessResponseDTO) },
+              {
+                properties: {
+                  data: { $ref: getSchemaPath(model) },
+                },
+              },
+            ],
+          }
+        : {
+            $ref: getSchemaPath(SuccessResponseDTO),
+          };
+
   return applyDecorators(
-    model
-      ? ApiExtraModels(SuccessResponseDTO, model)
-      : ApiExtraModels(SuccessResponseDTO),
+    ApiExtraModels(...extraModels),
     ApiOkResponse({
-      schema: {
-        allOf: [
-          { $ref: getSchemaPath(SuccessResponseDTO) },
-          {
-            properties: {
-              data: isPagination
-                ? {
-                    type: 'array',
-                    items: model
-                      ? { $ref: getSchemaPath(model) }
-                      : { type: 'string' },
-                  }
-                : model
-                  ? { $ref: getSchemaPath(model) }
-                  : { type: 'string', example: '', default: '' },
-              ...(isPagination
-                ? {
-                    total: { type: 'number', example: 100 },
-                    limit: { type: 'number', example: 10 },
-                    offset: { type: 'number', example: 0 },
-                  }
-                : {}),
-            },
-          },
-        ],
-      },
+      description: options?.description || 'Thực hiện thành công',
+      schema: schemaReference,
     }),
   );
 }

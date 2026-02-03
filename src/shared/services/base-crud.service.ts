@@ -12,7 +12,7 @@ import {
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import { PaginationDTO } from '@shared/dtos/pagination.dto';
-import * as queryHelper from '@shared/helpers/query.helper';
+import { parseSort } from '@shared/helpers/parser.helper';
 import { PaginationResult, RunnerUser } from '@shared/interfaces';
 
 @Injectable()
@@ -144,7 +144,7 @@ export abstract class BaseCRUDService<T extends ObjectLiteral> {
       withDeleted?: boolean;
     } = { withDeleted: false },
   ): Promise<T[]> {
-    const parsedSort = queryHelper.parseSort(options.sort);
+    const parsedSort = parseSort(options.sort);
 
     const data = await this.model.find({
       order: parsedSort,
@@ -166,7 +166,7 @@ export abstract class BaseCRUDService<T extends ObjectLiteral> {
       withDeleted?: boolean;
     } = { withDeleted: false },
   ): Promise<T[]> {
-    const parsedSort = queryHelper.parseSort(options.sort);
+    const parsedSort = parseSort(options.sort);
 
     const data = await this.model.find({
       order: parsedSort,
@@ -213,7 +213,7 @@ export abstract class BaseCRUDService<T extends ObjectLiteral> {
       };
     }
 
-    const parsedSort = queryHelper.parseSort(dto.sort || '-createdAt');
+    const parsedSort = parseSort(dto.sort || '-createdAt');
 
     const data = await this.model.find({
       take: limit,
@@ -292,5 +292,15 @@ export abstract class BaseCRUDService<T extends ObjectLiteral> {
     await this.model.update({ ...filter, deletedAt: IsNull() }, dto);
 
     return this.findOne(filter);
+  }
+
+  public async saveBatch(entities: Partial<T>[]) {
+    await this.model
+      .createQueryBuilder()
+      .insert()
+      .into(this.model.target)
+      .values(entities)
+      .orIgnore()
+      .execute();
   }
 }

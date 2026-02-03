@@ -61,3 +61,6 @@ makefile
 
 # Agent skills
 /.agent
+
+# Database
+*.csv

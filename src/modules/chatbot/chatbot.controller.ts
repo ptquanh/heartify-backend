@@ -1,7 +1,7 @@
 import { HttpResponse } from 'mvc-common-toolkit';
 
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { User } from '@modules/user/entities/user.entity';
 
@@ -15,8 +15,11 @@ import { AuthGuard } from '@shared/guards/auth.guard';
 import { UseCallQueue } from '@shared/interceptors/call-queue.interceptor';
 import { ApplyRateLimiting } from '@shared/interceptors/rate-limiting.interceptor';
 
-import { ChatMessagePayloadDTO } from './chat-message.dto';
-import { ChatMessage } from './chat-message.entity';
+import {
+  ChatMessagePayloadDTO,
+  ChatMessageResponseDTO,
+  PaginationChatMessageResponseDTO,
+} from './chat-message.dto';
 import { ChatbotService } from './services/chatbot.service';
 
 @ApiTags('Chatbot')
@@ -30,6 +33,11 @@ export class ChatbotController {
   @ApplyRateLimiting(10)
   @UseCallQueue()
   @Post('message')
+  @ApiOperation({
+    summary: 'Send Message',
+    description: 'Send a message to the chatbot',
+  })
+  @ApiOperationSuccess(ChatMessageResponseDTO)
   async sendMessage(
     @RequestUser() user: User,
     @Body() dto: ChatMessagePayloadDTO,
@@ -38,7 +46,11 @@ export class ChatbotController {
   }
 
   @Get('history')
-  @ApiOperationSuccess(ChatMessage, true)
+  @ApiOperation({
+    summary: 'Get History',
+    description: 'Get history of messages',
+  })
+  @ApiOperationSuccess(PaginationChatMessageResponseDTO, { isRaw: true })
   async getHistory(
     @RequestUser() user: User,
     @Query() dto: PaginationDTO,

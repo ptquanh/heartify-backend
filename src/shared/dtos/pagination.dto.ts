@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import { IsOptional, IsString, Length, MaxLength, Min } from 'class-validator';
 import * as dayjs from 'dayjs';
 import { Between, LessThan, MoreThan } from 'typeorm';
 
@@ -6,6 +6,20 @@ import { BadRequestException } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { BaseDTO } from './base.dto';
+
+export class PaginationDataDTO<T> {
+  @ApiProperty({ isArray: true })
+  rows: T[];
+
+  @ApiProperty()
+  total: number;
+
+  @ApiProperty()
+  limit: number;
+
+  @ApiProperty()
+  offset: number;
+}
 
 export class PaginationDTO extends BaseDTO {
   @ApiPropertyOptional({
@@ -79,4 +93,24 @@ export class PaginatedDateTimeDTO extends PaginationDTO {
   @IsOptional()
   @IsString()
   toDate?: string;
+}
+
+export class PaginatedByKeywordDTO extends PaginationDTO {
+  @ApiPropertyOptional({
+    description: 'the keyword to search for',
+  })
+  @IsOptional()
+  @IsString()
+  @Length(3, 60)
+  keyword?: string;
+}
+
+export class PaginatedByKeywordAndDateTimeDTO extends PaginatedDateTimeDTO {
+  @ApiPropertyOptional({
+    description: 'the keyword to search for',
+  })
+  @IsOptional()
+  @IsString()
+  @Length(3, 60)
+  keyword?: string;
 }
