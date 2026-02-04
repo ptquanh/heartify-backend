@@ -35,9 +35,7 @@ export class FoodService extends BaseCRUDService<Food> implements OnModuleInit {
 
     const csvFilePath = path.join(
       process.cwd(),
-      'src',
-      'shared',
-      'mocks',
+      'seeds',
       'recipes-with-nutrition.csv',
     );
 
