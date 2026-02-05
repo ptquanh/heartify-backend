@@ -7,7 +7,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AgentModule } from '@modules/agent/agent.module';
 import { AuditModule } from '@modules/audit/audit.module';
 import { AuthModule } from '@modules/auth/auth.module';
-import { ChatbotModule } from '@modules/chatbot/chatbot.module';
 import { CloudinaryModule } from '@modules/cloudinary/cloudinary.module';
 import { EmailModule } from '@modules/email/email.module';
 import { FoodModule } from '@modules/food/food.module';
@@ -49,7 +48,6 @@ import { TestOpikModule } from '@modules/test-opik/test-opik.module';
     TestOpikModule,
     RiskAssessmentModule,
     HealthRecordModule,
-    ChatbotModule,
     CloudinaryModule,
     FoodModule,
     AgentModule,

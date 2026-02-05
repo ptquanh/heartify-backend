@@ -4,19 +4,19 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { ChatMessage } from '../chat-message.entity';
-import { CHATBOT_CLEANUP_THRESHOLD_MS } from '../chatbot.constant';
+import { CHATBOT_CLEANUP_THRESHOLD_MS } from '../agent.constant';
+import { AgentChatMessage } from '../entities/agent-chat-message.entity';
 
 @Injectable()
-export class CronChatbotService {
-  private readonly logger = new Logger(CronChatbotService.name);
+export class AgentCleanupService {
+  private readonly logger = new Logger(AgentCleanupService.name);
 
   constructor(
-    @InjectRepository(ChatMessage)
-    private readonly chatMessageRepo: Repository<ChatMessage>,
+    @InjectRepository(AgentChatMessage)
+    private readonly chatMessageRepo: Repository<AgentChatMessage>,
   ) {}
 
-  @Cron(CronExpression.EVERY_8_HOURS)
+  @Cron(CronExpression.EVERY_HOUR)
   async handleCleanup() {
     this.logger.log('Running Chatbot cleanup task...');
 

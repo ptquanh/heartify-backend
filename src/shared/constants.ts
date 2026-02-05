@@ -136,11 +136,11 @@ export enum CLOUDINARY_FOLDER {
   SCAN_HEALTH_RECORD = 'scan-health-record',
 }
 
-export enum CHATBOT_MESSAGE_FORMAT {
+export enum AGENT_CHAT_MESSAGE_FORMAT {
   MARKDOWN = 'markdown',
 }
 
-export enum CHATBOT_MESSAGE_ROLE {
+export enum AGENT_CHAT_MESSAGE_ROLE {
   USER = 'user',
   ASSISTANT = 'assistant',
   SYSTEM = 'system',
