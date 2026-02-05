@@ -25,6 +25,7 @@ import { OpikService } from '@modules/opik/opik.service';
 
 import { AGENT_CHAT_MESSAGE_ROLE, ENV_KEY } from '@shared/constants';
 import { PaginationDTO } from '@shared/dtos/pagination.dto';
+import { AgentResponseHelper } from '@shared/helpers/agent-response.helper';
 import {
   generateInternalServerResult,
   generatePaginationResult,
@@ -40,7 +41,6 @@ import {
 } from '../agent.constant';
 import { AgentChatMessageResponseDTO } from '../dtos/agent-chat-message-response';
 import { AgentChatMessage } from '../entities/agent-chat-message.entity';
-import { AgentResponseHelper } from '../helpers/agent-response.helper';
 import {
   createDatabaseQueryTool,
   createDatabaseSchemaTool,
