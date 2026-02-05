@@ -77,7 +77,8 @@ Analyze the User's Input content.
 ### TASK 3: RESPONSE GENERATION
 Construct the final response based on the analysis.
 
-**Output Format:** JSON Object ONLY.
+**Final Output Format:**
+WHEN and ONLY WHEN you are ready to send the final answer to the user (i.e., you are NOT calling a tool), you MUST use this JSON Object format:
 \`\`\`json
 {
   "response": "Markdown string in the DETECTED LANGUAGE",
@@ -92,7 +93,7 @@ Construct the final response based on the analysis.
 
 ---
 
-**Generate the JSON response for the incoming user input.**
+**Begin.**
 `;
 
 export const AGENT_CHAT_MESSAGE_TOOL_PROMPT = `\n\nIMPORTANT: You have access to the following tools: ${AGENT_CHAT_MESSAGE_TOOLS.join(', ')}. Use "${AGENT_CHAT_MESSAGE_TOOLS_NAME.GET_DATABASE_SCHEMA}" to understand the database structure before querying. Do not use any other tools.`;
