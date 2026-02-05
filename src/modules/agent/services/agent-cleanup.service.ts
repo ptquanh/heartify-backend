@@ -4,7 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { CHATBOT_CLEANUP_THRESHOLD_MS } from '../agent.constant';
+import { AGENT_CHAT_MESSAGE_CLEANUP_THRESHOLD_MS } from '../agent.constant';
 import { AgentChatMessage } from '../entities/agent-chat-message.entity';
 
 @Injectable()
@@ -18,9 +18,11 @@ export class AgentCleanupService {
 
   @Cron(CronExpression.EVERY_HOUR)
   async handleCleanup() {
-    this.logger.log('Running Chatbot cleanup task...');
+    this.logger.log('Running Agent cleanup task...');
 
-    const thresholdDate = new Date(Date.now() - CHATBOT_CLEANUP_THRESHOLD_MS);
+    const thresholdDate = new Date(
+      Date.now() - AGENT_CHAT_MESSAGE_CLEANUP_THRESHOLD_MS,
+    );
 
     try {
       const result = await this.chatMessageRepo.delete({
