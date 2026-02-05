@@ -4,6 +4,8 @@ import { ENV_KEY, INJECTION_TOKEN } from 'src/shared/constants';
 import { Global, Module, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { OpikService } from './opik.service';
+
 const opikServiceProvider: Provider = {
   provide: INJECTION_TOKEN.OPIK_SERVICE,
   useFactory: (config: ConfigService) => {
@@ -18,7 +20,7 @@ const opikServiceProvider: Provider = {
 
 @Global()
 @Module({
-  providers: [opikServiceProvider],
-  exports: [INJECTION_TOKEN.OPIK_SERVICE],
+  providers: [opikServiceProvider, OpikService],
+  exports: [opikServiceProvider, OpikService],
 })
 export class OpikModule {}
