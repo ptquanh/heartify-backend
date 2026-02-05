@@ -38,7 +38,9 @@ import {
   AGENT_CHAT_MESSAGE_TOOL_PROMPT,
   AGENT_LLM_MODEL,
 } from '../agent.constant';
+import { AgentChatMessageResponseDTO } from '../dtos/agent-chat-message-response';
 import { AgentChatMessage } from '../entities/agent-chat-message.entity';
+import { AgentResponseHelper } from '../helpers/agent-response.helper';
 import {
   createDatabaseQueryTool,
   createDatabaseSchemaTool,
@@ -148,7 +150,7 @@ export class AgentService
     userId: string,
     userMessage: string,
     threadId: string,
-  ): Promise<string> {
+  ): Promise<AgentChatMessageResponseDTO> {
     const rootTraceId = generateId();
     const rootStartTime = new Date();
 
@@ -176,8 +178,23 @@ export class AgentService
 
       const llmStartTime = new Date();
       const result = await this.app.invoke(inputs, config);
+
       const lastMessage = result.messages[result.messages.length - 1];
       const responseContent = lastMessage.content;
+
+      let parsedResponse: AgentChatMessageResponseDTO;
+      try {
+        parsedResponse = AgentResponseHelper.parseResponse(responseContent);
+      } catch (parseError) {
+        this.logger.error(
+          `Failed to parse agent response: ${responseContent}`,
+          parseError,
+        );
+        parsedResponse = {
+          response: responseContent,
+          suggested_actions: [],
+        };
+      }
 
       this.opikService.trace({
         name: 'langgraph_agent_execution',
@@ -188,7 +205,7 @@ export class AgentService
           threadId,
         },
         output: {
-          content: responseContent,
+          content: parsedResponse,
           messages: result.messages,
         },
         tags: ['llm', 'langgraph', 'agent'],
@@ -204,7 +221,7 @@ export class AgentService
         this.saveMessage(
           userId,
           AGENT_CHAT_MESSAGE_ROLE.ASSISTANT,
-          responseContent,
+          parsedResponse.response,
         ),
       ]);
 
@@ -225,7 +242,7 @@ export class AgentService
         input: { userId, userMessage, threadId },
         output: {
           success: true,
-          response: responseContent,
+          response: parsedResponse,
         },
         tags: ['agent', 'e2e', 'production'],
         metadata: {
@@ -235,7 +252,7 @@ export class AgentService
         threadId: userId,
       });
 
-      return responseContent;
+      return parsedResponse;
     } catch (error) {
       this.logger.error(`Error calling agent: ${error.message}`, error.stack);
 

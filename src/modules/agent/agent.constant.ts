@@ -78,7 +78,13 @@ Analyze the User's Input content.
 Construct the final response based on the analysis.
 
 **Final Output Format:**
-WHEN and ONLY WHEN you are ready to send the final answer to the user (i.e., you are NOT calling a tool), you MUST use this JSON Object format:
+WHEN ready to answer, you MUST output **ONLY** a valid JSON Code Block.
+
+**⛔ STRICT PROHIBITION (TO SAVE TOKENS):**
+-   **DO NOT** write the answer in plain text first.
+-   **DO NOT** repeat the content outside the JSON.
+-   **DIRECTLY** start your response with \`\`\`json.
+
 \`\`\`json
 {
   "response": "Markdown string in the DETECTED LANGUAGE",

@@ -16,11 +16,14 @@ import { UseCallQueue } from '@shared/interceptors/call-queue.interceptor';
 import { ApplyRateLimiting } from '@shared/interceptors/rate-limiting.interceptor';
 
 import { AgentChatMessagePayloadDTO } from './dtos/agent-chat-message-payload';
-import { PaginationAgentChatMessageResponseDTO } from './dtos/agent-chat-message-response';
+import {
+  AgentChatMessageResponseDTO,
+  PaginationAgentChatMessageResponseDTO,
+} from './dtos/agent-chat-message-response';
 import { AgentService } from './services/agent.service';
 
-@ApiTags('Agent')
 @ApiBearerAuth()
+@ApiTags('Agent')
 @UseGuards(AuthGuard)
 @Controller('agent')
 @ApiOperationError()
@@ -44,7 +47,7 @@ export class AgentController {
   @UseCallQueue()
   @Post('chat')
   @ApiOperation({ summary: 'Chat with the AI Agent' })
-  @ApiOperationSuccess(AgentChatMessagePayloadDTO)
+  @ApiOperationSuccess(AgentChatMessageResponseDTO)
   async chat(
     @Body() dto: AgentChatMessagePayloadDTO,
     @RequestUser() user: User,
