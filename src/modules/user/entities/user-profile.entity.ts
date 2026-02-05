@@ -13,6 +13,11 @@ import { BodyMetrics } from '@shared/interfaces';
 
 import { User } from './user.entity';
 
+export interface HealthConditionEntry {
+  options: string[];
+  details?: string;
+}
+
 @Entity('user_profiles')
 export class UserProfile extends AuditWithTimezone {
   @PrimaryGeneratedColumn('uuid')
@@ -45,4 +50,16 @@ export class UserProfile extends AuditWithTimezone {
 
   @Column({ name: 'country', type: 'varchar', length: 3 })
   country: string;
+
+  @Column({ name: 'allergies', type: 'jsonb', nullable: true })
+  allergies: HealthConditionEntry;
+
+  @Column({ name: 'medical_conditions', type: 'jsonb', nullable: true })
+  medicalConditions: HealthConditionEntry;
+
+  @Column({ name: 'medications', type: 'jsonb', nullable: true })
+  medications: HealthConditionEntry;
+
+  @Column({ name: 'physical_limitations', type: 'jsonb', nullable: true })
+  physicalLimitations: HealthConditionEntry;
 }

@@ -14,7 +14,7 @@ import { UserAuthProfile } from '@shared/interfaces';
 
 import { UserProfile } from './entities/user-profile.entity';
 import { User } from './entities/user.entity';
-import { UpdateUserProfileDto } from './user.dto';
+import { UpdateUserProfileDTO } from './user.dto';
 import { UserService } from './user.service';
 
 @ApiBearerAuth()
@@ -47,7 +47,7 @@ export class UserController {
   @ApiOperationSuccess(UserProfile)
   async updateProfile(
     @RequestUser() user: UserAuthProfile,
-    @Body() dto: UpdateUserProfileDto,
+    @Body() dto: UpdateUserProfileDTO,
   ): Promise<HttpResponse> {
     return this.service.updateProfile(user.id, dto);
   }

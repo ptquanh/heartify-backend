@@ -15,7 +15,7 @@ import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import { UserProfile } from './entities/user-profile.entity';
 import { User } from './entities/user.entity';
-import { UpdateUserProfileDto, VerifyUniquenessUserDTO } from './user.dto';
+import { UpdateUserProfileDTO, VerifyUniquenessUserDTO } from './user.dto';
 
 @Injectable()
 export class UserService extends BaseCRUDService<User> {
@@ -58,7 +58,7 @@ export class UserService extends BaseCRUDService<User> {
 
   public async updateProfile(
     userId: string,
-    dto: UpdateUserProfileDto,
+    dto: UpdateUserProfileDTO,
   ): Promise<OperationResult<UserProfile>> {
     const user = await this.findOne(
       { id: userId },

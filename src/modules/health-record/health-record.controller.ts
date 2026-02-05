@@ -12,9 +12,9 @@ import { AuthGuard } from '@shared/guards/auth.guard';
 import { UserAuthProfile } from '@shared/interfaces';
 
 import {
-  CreateHealthRecordDto,
-  HealthRecordPaginationDto,
-  HealthRecordResponseDto,
+  CreateHealthRecordDTO,
+  HealthRecordPaginationDTO,
+  HealthRecordResponseDTO,
 } from './health-record.dto';
 import { HealthRecordService } from './health-record.service';
 
@@ -31,10 +31,10 @@ export class HealthRecordController {
     summary: 'Create Health Record',
     description: 'Create a new health record and perform risk assessment',
   })
-  @ApiOperationSuccess(HealthRecordResponseDto)
+  @ApiOperationSuccess(HealthRecordResponseDTO)
   async createHealthRecord(
     @RequestUser() user: UserAuthProfile,
-    @Body() dto: CreateHealthRecordDto,
+    @Body() dto: CreateHealthRecordDTO,
   ): Promise<HttpResponse> {
     return this.healthRecordService.createHealthRecord(user.id, dto);
   }
@@ -44,10 +44,10 @@ export class HealthRecordController {
     summary: 'Get My Health Records',
     description: 'Retrieve all health records for the current user',
   })
-  @ApiOperationSuccess(HealthRecordResponseDto)
+  @ApiOperationSuccess(HealthRecordResponseDTO)
   async paginateHealthRecords(
     @RequestUser() user: UserAuthProfile,
-    @Query() dto: HealthRecordPaginationDto,
+    @Query() dto: HealthRecordPaginationDTO,
   ): Promise<any> {
     return this.healthRecordService.paginateHealthRecords(user.id, dto);
   }

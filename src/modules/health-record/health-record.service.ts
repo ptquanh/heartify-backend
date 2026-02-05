@@ -16,8 +16,8 @@ import {
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import {
-  CreateHealthRecordDto,
-  HealthRecordPaginationDto,
+  CreateHealthRecordDTO,
+  HealthRecordPaginationDTO,
 } from './health-record.dto';
 import { HealthRecord } from './health-record.entity';
 
@@ -37,7 +37,7 @@ export class HealthRecordService extends BaseCRUDService<HealthRecord> {
 
   async createHealthRecord(
     userId: string,
-    dto: CreateHealthRecordDto,
+    dto: CreateHealthRecordDTO,
   ): Promise<OperationResult<HealthRecord>> {
     const user = await this.userService.findOne(
       { id: userId },
@@ -104,7 +104,7 @@ export class HealthRecordService extends BaseCRUDService<HealthRecord> {
 
   async paginateHealthRecords(
     userId: string,
-    dto: HealthRecordPaginationDto,
+    dto: HealthRecordPaginationDTO,
   ): Promise<PaginationResult<HealthRecord>> {
     dto.addFilter({ userId });
     const records = await this.paginate(dto, dto.filter);

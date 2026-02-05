@@ -17,7 +17,7 @@ import { RiskLevel } from '@modules/risk-assessment/risk-assessment.constants';
 import { PaginationDTO } from '@shared/dtos/pagination.dto';
 import { BodyMetrics, HeightUnit, WeightUnit } from '@shared/interfaces';
 
-export class MeasurementValueDto {
+export class MeasurementValueDTO {
   @ApiProperty({ description: 'Value of measurement' })
   @IsNumber()
   value: number;
@@ -27,20 +27,20 @@ export class MeasurementValueDto {
   unit: string;
 }
 
-export class BodyMetricsDto implements BodyMetrics {
-  @ApiPropertyOptional({ type: MeasurementValueDto })
+export class BodyMetricsDTO implements BodyMetrics {
+  @ApiPropertyOptional({ type: MeasurementValueDTO })
   @IsOptional()
   @ValidateNested()
-  @Type(() => MeasurementValueDto)
+  @Type(() => MeasurementValueDTO)
   weight?: {
     value: number;
     unit: WeightUnit;
   };
 
-  @ApiPropertyOptional({ type: MeasurementValueDto })
+  @ApiPropertyOptional({ type: MeasurementValueDTO })
   @IsOptional()
   @ValidateNested()
-  @Type(() => MeasurementValueDto)
+  @Type(() => MeasurementValueDTO)
   height?: {
     value: number;
     unit: HeightUnit;
@@ -52,7 +52,7 @@ export class BodyMetricsDto implements BodyMetrics {
   bmi?: number;
 }
 
-export class CreateHealthRecordDto {
+export class CreateHealthRecordDTO {
   @ApiProperty({ description: 'Systolic Blood Pressure', example: 120 })
   @IsNumber()
   @Min(50)
@@ -90,14 +90,14 @@ export class CreateHealthRecordDto {
   @IsBoolean()
   isTreatedHypertension: boolean;
 
-  @ApiPropertyOptional({ type: BodyMetricsDto })
+  @ApiPropertyOptional({ type: BodyMetricsDTO })
   @IsOptional()
   @ValidateNested()
-  @Type(() => BodyMetricsDto)
-  measurements?: BodyMetricsDto;
+  @Type(() => BodyMetricsDTO)
+  measurements?: BodyMetricsDTO;
 }
 
-export class HealthRecordResponseDto extends CreateHealthRecordDto {
+export class HealthRecordResponseDTO extends CreateHealthRecordDTO {
   @ApiProperty()
   id: string;
 
@@ -114,7 +114,7 @@ export class HealthRecordResponseDto extends CreateHealthRecordDto {
   riskLevel: RiskLevel;
 }
 
-export class HealthRecordPaginationDto extends PaginationDTO {
+export class HealthRecordPaginationDTO extends PaginationDTO {
   @ApiPropertyOptional({
     enum: RiskLevel,
   })
