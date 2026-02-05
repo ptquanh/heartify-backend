@@ -1,5 +1,4 @@
 import { LRUCache } from 'lru-cache';
-import { AuditService, ErrorLog } from 'mvc-common-toolkit';
 import {
   Observable,
   TimeoutError,
@@ -12,8 +11,8 @@ import {
 import {
   CallHandler,
   ExecutionContext,
-  ForbiddenException,
-  Inject,
+  HttpException,
+  HttpStatus,
   Injectable,
   Logger,
   NestInterceptor,
@@ -25,10 +24,9 @@ import {
 import { Reflector } from '@nestjs/core';
 
 import {
-  APP_ACTION,
   DEFAULT_MAX_CONCURRENT_CALL,
+  ERR_CODE,
   HEADER_KEY,
-  INJECTION_TOKEN,
   METADATA_KEY,
 } from '@shared/constants';
 
@@ -41,9 +39,6 @@ export class CallQueueInterceptor implements NestInterceptor {
 
   constructor(
     protected reflector: Reflector,
-
-    @Inject(INJECTION_TOKEN.AUDIT_SERVICE)
-    protected auditService: AuditService,
 
     @Optional()
     protected cacheEngine = new LRUCache({
@@ -85,18 +80,17 @@ export class CallQueueInterceptor implements NestInterceptor {
       this.logger.warn(
         `user ${user.id} exceeded concurrency limit for cache key ${cacheKey}`,
       );
-      this.auditService.emitLog(
-        new ErrorLog({
-          logId,
-          userId: user.id,
-          message: `user ${user.id} exceeded concurrency limit for cache key ${cacheKey}`,
-          action: APP_ACTION.API_CALL,
-        }),
-      );
 
-      return throwError(
-        () => new ForbiddenException('Max concurrency call reached!'),
-      );
+      return throwError(() => {
+        return new HttpException(
+          {
+            statusCode: HttpStatus.CONFLICT,
+            message: 'Max concurrency call reached!',
+            error: ERR_CODE.ALREADY_EXISTS,
+          },
+          HttpStatus.CONFLICT,
+        );
+      });
     }
 
     this.cacheEngine.set(cacheKey, newValue);
@@ -108,21 +102,17 @@ export class CallQueueInterceptor implements NestInterceptor {
           this.logger.error(
             `Timeout error for user ${user.id}. Path: ${cacheKey}`,
           );
-
-          this.auditService.emitLog(
-            new ErrorLog({
-              logId,
-              userId: user.id,
-              message: `Timeout error for user ${user.id}`,
-              action: APP_ACTION.API_CALL,
-              metadata: {
-                cacheKey,
-              },
-            }),
-          );
         }
-        // Perform any additional error handling if necessary
-        return throwError(() => err);
+        return throwError(() => {
+          return new HttpException(
+            {
+              statusCode: HttpStatus.CONFLICT,
+              message: 'Max concurrency call reached!',
+              error: ERR_CODE.ALREADY_EXISTS,
+            },
+            HttpStatus.CONFLICT,
+          );
+        });
       }),
       finalize(() => {
         const existingValue =
