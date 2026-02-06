@@ -1,0 +1,100 @@
+import {
+  AuditService,
+  ErrorLog,
+  HttpMethod,
+  HttpRequestOption,
+  HttpResponse,
+  HttpService,
+  OperationResult,
+  stringUtils,
+} from 'mvc-common-toolkit';
+
+import { Injectable } from '@nestjs/common';
+
+import { APP_ACTION } from '@shared/constants';
+import { getLogId } from '@shared/decorators/logging';
+
+enum HttpMethodEnum {
+  GET = 'get',
+  POST = 'post',
+  PUT = 'put',
+  PATCH = 'patch',
+  DELETE = 'delete',
+}
+
+const httpMethodsWithBody = [
+  HttpMethodEnum.POST,
+  HttpMethodEnum.PUT,
+  HttpMethodEnum.PATCH,
+];
+
+export interface SendToPartnerOptions {
+  emitAudit: boolean | ((response: HttpResponse | OperationResult) => boolean);
+  appAction: string;
+}
+
+@Injectable()
+export abstract class OutboundPartnerService {
+  constructor(
+    protected httpService: HttpService,
+    protected auditService: AuditService,
+  ) {}
+
+  protected abstract get partnerServerUrl(): string;
+  protected abstract partnerRequestOption(): HttpRequestOption;
+
+  public async sendToPartner(
+    method: HttpMethod,
+    path: string,
+    payload?: Record<string, any>,
+    options: Partial<SendToPartnerOptions> = {
+      emitAudit: true,
+      appAction: APP_ACTION.SEND_TO_PARTNER,
+    },
+  ): Promise<HttpResponse> {
+    const url = this.partnerServerUrl + path;
+    const requestOptions = this.partnerRequestOption();
+
+    if (httpMethodsWithBody.some((m) => m === method)) {
+      requestOptions.body = payload;
+    } else if (method === 'get') {
+      requestOptions.query = payload;
+    }
+
+    const response = await this.httpService.send(method, url, requestOptions);
+
+    if (!response.data?.success) {
+      if (
+        (typeof options.emitAudit === 'boolean' && options.emitAudit) ||
+        (typeof options.emitAudit === 'function' &&
+          options.emitAudit?.(response))
+      ) {
+        this.auditService.emitLog(
+          new ErrorLog({
+            logId: getLogId(requestOptions),
+            message: response.data?.message,
+            action: options?.appAction,
+            payload: JSON.stringify(payload, stringUtils.maskFn),
+            metadata: {
+              response: JSON.stringify(response, stringUtils.maskFn),
+              url,
+              method,
+            },
+          }),
+        );
+      }
+
+      return {
+        success: false,
+        message: response.data?.message,
+        code: response.data?.code,
+        httpCode: response.data?.httpCode,
+      };
+    }
+
+    return {
+      success: true,
+      data: response.data?.data,
+    };
+  }
+}

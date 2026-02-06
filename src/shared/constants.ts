@@ -50,6 +50,7 @@ export const APP_ACTION = {
   CHANGE_PASSWORD: 'CHANGE_PASSWORD'.toLowerCase(),
   SOCIAL_LOGIN: 'SOCIAL_LOGIN'.toLowerCase(),
   SEND_EMAIL: 'SEND_EMAIL'.toLowerCase(),
+  SEND_TO_PARTNER: 'SEND_TO_PARTNER'.toLowerCase(),
 };
 
 export enum VERIFY_OTP_ACTION {
