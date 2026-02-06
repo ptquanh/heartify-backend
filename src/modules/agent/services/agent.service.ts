@@ -2,6 +2,7 @@ import {
   AIMessage,
   HumanMessage,
   SystemMessage,
+  ToolMessage,
 } from '@langchain/core/messages';
 import { ChatGroq } from '@langchain/groq';
 import {
@@ -35,9 +36,17 @@ import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import {
   AGENT_CHAT_MESSAGE_HISTORY_LIMIT,
-  AGENT_CHAT_MESSAGE_SYSTEM_PROMPT,
-  AGENT_CHAT_MESSAGE_TOOL_PROMPT,
+  AGENT_CHAT_MESSAGE_INTENT,
+  AGENT_CHAT_MESSAGE_TOOLS,
+  AGENT_CHAT_MESSAGE_TOOLS_NAME,
+  AGENT_GRAPH_EDGE,
+  AGENT_GRAPH_NODE,
   AGENT_LLM_MODEL,
+  AGENT_TEMPERATURE,
+  GREETING_PROMPT,
+  MEDICAL_SYSTEM_PROMPT,
+  REFUSAL_PROMPT,
+  ROUTER_SYSTEM_PROMPT,
 } from '../agent.constant';
 import { AgentChatMessageResponseDTO } from '../dtos/agent-chat-message-response';
 import { AgentChatMessage } from '../entities/agent-chat-message.entity';
@@ -45,7 +54,12 @@ import {
   createDatabaseQueryTool,
   createDatabaseSchemaTool,
 } from '../tools/database.tool';
+import { createFoodQueryTool } from '../tools/food-query.tool';
 import { systemTimeTool } from '../tools/system-time.tool';
+
+interface RouterOutput {
+  intent: AGENT_CHAT_MESSAGE_INTENT;
+}
 
 @Injectable()
 export class AgentService
@@ -56,6 +70,7 @@ export class AgentService
   private app: any;
   private chatModel: any;
   private tools: any[] = [systemTimeTool];
+  private routerModel: any;
 
   constructor(
     @InjectRepository(AgentChatMessage)
@@ -77,36 +92,86 @@ export class AgentService
   private initializeAgent() {
     const groqApiKey = this.configService.getOrThrow(ENV_KEY.GROQ_API_KEY);
 
-    const databaseQueryTool = createDatabaseQueryTool(this.dataSource);
-    const databaseSchemaTool = createDatabaseSchemaTool(this.dataSource);
+    const toolFactories = {
+      [AGENT_CHAT_MESSAGE_TOOLS_NAME.GET_SYSTEM_TIME]: systemTimeTool,
+      [AGENT_CHAT_MESSAGE_TOOLS_NAME.QUERY_DATABASE]: createDatabaseQueryTool(
+        this.dataSource,
+      ),
+      [AGENT_CHAT_MESSAGE_TOOLS_NAME.GET_DATABASE_SCHEMA]:
+        createDatabaseSchemaTool(this.dataSource),
+      [AGENT_CHAT_MESSAGE_TOOLS_NAME.SEARCH_FOODS]: createFoodQueryTool(
+        this.dataSource,
+      ),
+    };
 
-    this.tools = [systemTimeTool, databaseQueryTool, databaseSchemaTool];
-
-    this.chatModel = new ChatGroq({
-      apiKey: groqApiKey,
-      model: AGENT_LLM_MODEL,
-      temperature: 0,
-    }).bindTools(this.tools);
+    this.tools = AGENT_CHAT_MESSAGE_TOOLS.map(
+      (toolName) => toolFactories[toolName],
+    );
 
     const toolNode = new ToolNode(this.tools);
 
+    // Initialize Router Agent
+    this.routerModel = new ChatGroq({
+      apiKey: groqApiKey,
+      model: AGENT_LLM_MODEL.ROUTER,
+      temperature: AGENT_TEMPERATURE.ROUTER,
+    });
+
+    // Initialize Medical Agent
+    this.chatModel = new ChatGroq({
+      apiKey: groqApiKey,
+      model: AGENT_LLM_MODEL.MEDICAL,
+      temperature: AGENT_TEMPERATURE.MEDICAL,
+    }).bindTools(this.tools);
+
+    // Build Graph
     const workflow = new StateGraph(MessagesAnnotation)
-      .addNode('agent', this.callModel.bind(this))
-      .addNode('tools', toolNode)
-      .addEdge(START, 'agent')
-      .addConditionalEdges('agent', this.shouldContinue)
-      .addEdge('tools', 'agent');
+      .addNode(AGENT_GRAPH_NODE.CLASSIFIER, this.classificationNode.bind(this))
+      .addNode(AGENT_GRAPH_NODE.MEDICAL_AGENT, this.medicalNode.bind(this))
+      .addNode(AGENT_GRAPH_NODE.GREETING_HANDLER, this.greetingNode.bind(this))
+      .addNode(AGENT_GRAPH_NODE.REFUSAL_HANDLER, this.refusalNode.bind(this))
+      .addNode(AGENT_GRAPH_NODE.TOOLS, toolNode)
+      // Edges
+      // Start -> Classifier
+      .addEdge(START, AGENT_GRAPH_NODE.CLASSIFIER)
+      .addConditionalEdges(
+        AGENT_GRAPH_NODE.CLASSIFIER,
+        this.routeBasedOnIntent.bind(this),
+        {
+          [AGENT_GRAPH_EDGE.MEDICAL]: AGENT_GRAPH_NODE.MEDICAL_AGENT,
+          [AGENT_GRAPH_EDGE.GREETING]: AGENT_GRAPH_NODE.GREETING_HANDLER,
+          [AGENT_GRAPH_EDGE.REFUSAL]: AGENT_GRAPH_NODE.REFUSAL_HANDLER,
+        },
+      )
+
+      .addEdge(AGENT_GRAPH_NODE.TOOLS, AGENT_GRAPH_NODE.MEDICAL_AGENT)
+      .addConditionalEdges(
+        AGENT_GRAPH_NODE.MEDICAL_AGENT,
+        this.shouldContinue,
+        {
+          tools: AGENT_GRAPH_NODE.TOOLS,
+          [END]: END,
+        },
+      )
+
+      .addEdge(AGENT_GRAPH_NODE.GREETING_HANDLER, END)
+      .addEdge(AGENT_GRAPH_NODE.REFUSAL_HANDLER, END);
 
     this.app = workflow.compile();
-    this.logger.log('LangGraph Agent initialized');
+    this.logger.log('LangGraph Router-Architecture Initialized');
   }
 
-  private async callModel(state: typeof MessagesAnnotation.State) {
-    const messages = state.messages;
-    const systemMessage = new SystemMessage(
-      AGENT_CHAT_MESSAGE_SYSTEM_PROMPT + AGENT_CHAT_MESSAGE_TOOL_PROMPT,
-    );
-    const response = await this.chatModel.invoke([systemMessage, ...messages]);
+  private async classificationNode(state: typeof MessagesAnnotation.State) {
+    const { messages } = state;
+    const lastUserMsg = messages[messages.length - 1];
+
+    const classificationMsg = [
+      new SystemMessage(ROUTER_SYSTEM_PROMPT),
+      lastUserMsg,
+    ];
+
+    const response = await this.routerModel.invoke(classificationMsg);
+
     return { messages: [response] };
   }
 
@@ -120,7 +185,7 @@ export class AgentService
       Array.isArray(lastMessage.tool_calls) &&
       lastMessage.tool_calls.length > 0
     ) {
-      return 'tools';
+      return AGENT_GRAPH_NODE.TOOLS;
     }
     return END;
   }
@@ -211,7 +276,7 @@ export class AgentService
         tags: ['llm', 'langgraph', 'agent'],
         metadata: {
           parent_trace_id: rootTraceId,
-          model: AGENT_LLM_MODEL,
+          model: AGENT_LLM_MODEL.MEDICAL,
         },
       });
 
@@ -278,6 +343,100 @@ export class AgentService
 
       throw error;
     }
+  }
+
+  private routeBasedOnIntent(state: typeof MessagesAnnotation.State) {
+    const messages = state.messages;
+    const lastMessage = messages[messages.length - 1] as AIMessage;
+    const contentStr = lastMessage.content as string;
+
+    try {
+      let cleanContent = contentStr
+        .replace(/```json/gi, '')
+        .replace(/```/g, '')
+        .trim();
+      const firstBrace = cleanContent.indexOf('{');
+      const lastBrace = cleanContent.lastIndexOf('}');
+      if (firstBrace >= 0 && lastBrace >= 0) {
+        cleanContent = cleanContent.substring(firstBrace, lastBrace + 1);
+      }
+      const content = JSON.parse(cleanContent) as RouterOutput;
+      this.logger.log(`Router Decision: ${content.intent}`);
+
+      switch (content.intent) {
+        case AGENT_CHAT_MESSAGE_INTENT.GREETING:
+          return AGENT_GRAPH_EDGE.GREETING;
+        case AGENT_CHAT_MESSAGE_INTENT.OFF_TOPIC:
+          return AGENT_GRAPH_EDGE.REFUSAL;
+        case AGENT_CHAT_MESSAGE_INTENT.MEDICAL:
+        default:
+          return AGENT_GRAPH_EDGE.MEDICAL;
+      }
+    } catch (e) {
+      this.logger.error(
+        `Router Parse Error for input: "${contentStr.substring(0, 50)}..."`,
+        e,
+      );
+      return AGENT_GRAPH_NODE.MEDICAL_AGENT;
+    }
+  }
+
+  private async medicalNode(state: typeof MessagesAnnotation.State) {
+    const { messages } = state;
+
+    const conversationMessages = messages.filter((msg) => {
+      if (
+        msg instanceof HumanMessage ||
+        msg instanceof SystemMessage ||
+        msg instanceof ToolMessage
+      ) {
+        return true;
+      }
+
+      if (msg instanceof AIMessage && typeof msg.content === 'string') {
+        try {
+          const parsed = JSON.parse(msg.content);
+          if (
+            parsed &&
+            parsed.intent &&
+            [
+              AGENT_CHAT_MESSAGE_INTENT.MEDICAL,
+              AGENT_CHAT_MESSAGE_INTENT.GREETING,
+              AGENT_CHAT_MESSAGE_INTENT.OFF_TOPIC,
+            ].includes(parsed.intent)
+          ) {
+            return false;
+          }
+        } catch {
+          return true;
+        }
+      }
+      return true;
+    });
+    const systemMessage = new SystemMessage(MEDICAL_SYSTEM_PROMPT);
+
+    const response = await this.chatModel.invoke([
+      systemMessage,
+      ...conversationMessages,
+    ]);
+
+    return { messages: [response] };
+  }
+
+  private async greetingNode(state: typeof MessagesAnnotation.State) {
+    const response = await this.routerModel.invoke([
+      new SystemMessage(GREETING_PROMPT),
+      state.messages[state.messages.length - 2],
+    ]);
+    return { messages: [response] };
+  }
+
+  private async refusalNode(state: typeof MessagesAnnotation.State) {
+    const response = await this.routerModel.invoke([
+      new SystemMessage(REFUSAL_PROMPT),
+      state.messages[state.messages.length - 2],
+    ]);
+    return { messages: [response] };
   }
 
   private async saveMessage(
