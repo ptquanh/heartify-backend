@@ -1,6 +1,14 @@
 import { HttpResponse } from 'mvc-common-toolkit';
 
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import {
@@ -50,5 +58,18 @@ export class HealthRecordController {
     @Query() dto: HealthRecordPaginationDTO,
   ): Promise<any> {
     return this.healthRecordService.paginateHealthRecords(user.id, dto);
+  }
+
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Get Health Record by ID',
+    description: 'Retrieve a specific health record by ID',
+  })
+  @ApiOperationSuccess(HealthRecordResponseDTO)
+  async getHealthRecordById(
+    @RequestUser() user: UserAuthProfile,
+    @Param('id') id: string,
+  ): Promise<any> {
+    return this.healthRecordService.getHealthRecordById(user.id, id);
   }
 }

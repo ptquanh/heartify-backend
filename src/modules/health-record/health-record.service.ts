@@ -94,7 +94,7 @@ export class HealthRecordService extends BaseCRUDService<HealthRecord> {
     return generateSuccessResult(healthRecord);
   }
 
-  async findOneHealthRecord(
+  async getHealthRecordById(
     userId: string,
     recordId: string,
   ): Promise<OperationResult<HealthRecord>> {
