@@ -1,19 +1,54 @@
-name: Deploy and Purge Cache
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - develop
+  pull_request:
+    branches:
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint Code
+        run: yarn lint
+
+      - name: Build Application
+        run: yarn build
+
+      - name: Run Unit Tests
+        run: yarn test
+
   deploy:
+    name: Deploy to Staging
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
     runs-on: self-hosted
     steps:
       - name: Execute Deployment Script
         run: |
           cd /home/heartify/projects/heartify-backend
           git config --global --add safe.directory /home/heartify/projects/heartify-backend
-          git reset --hard
-          git pull origin develop
+          git fetch origin develop
+          git reset --hard origin/develop
           chmod +x deploy.sh
           ./deploy.sh

@@ -59,6 +59,9 @@ services:
       # Groq
       GROQ_API_KEY: '${GROQ_API_KEY}'
 
+      # Partner food recommendation
+      PARTNER_FOOD_RECOMMENDATION_URL: '${PARTNER_FOOD_RECOMMENDATION_URL}'
+
     depends_on:
       postgres:
         condition: service_healthy
