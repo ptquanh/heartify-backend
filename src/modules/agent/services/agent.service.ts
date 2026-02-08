@@ -4,6 +4,7 @@ import {
   SystemMessage,
   ToolMessage,
 } from '@langchain/core/messages';
+import { RunnableConfig } from '@langchain/core/runnables';
 import { ChatGroq } from '@langchain/groq';
 import {
   END,
@@ -161,7 +162,10 @@ export class AgentService
     this.logger.log('LangGraph Router-Architecture Initialized');
   }
 
-  private async classificationNode(state: typeof MessagesAnnotation.State) {
+  private async classificationNode(
+    state: typeof MessagesAnnotation.State,
+    config: RunnableConfig,
+  ) {
     const { messages } = state;
     const lastUserMsg = messages[messages.length - 1];
 
@@ -170,7 +174,10 @@ export class AgentService
       lastUserMsg,
     ];
 
-    const response = await this.routerModel.invoke(classificationMsg);
+    const response = await this.routerModel.invoke(classificationMsg, {
+      ...config,
+      response_format: { type: 'json_object' },
+    });
 
     return { messages: [response] };
   }
@@ -377,11 +384,14 @@ export class AgentService
         `Router Parse Error for input: "${contentStr.substring(0, 50)}..."`,
         e,
       );
-      return AGENT_GRAPH_NODE.MEDICAL_AGENT;
+      return AGENT_GRAPH_EDGE.MEDICAL;
     }
   }
 
-  private async medicalNode(state: typeof MessagesAnnotation.State) {
+  private async medicalNode(
+    state: typeof MessagesAnnotation.State,
+    config: RunnableConfig,
+  ) {
     const { messages } = state;
 
     const conversationMessages = messages.filter((msg) => {
@@ -415,27 +425,39 @@ export class AgentService
     });
     const systemMessage = new SystemMessage(MEDICAL_SYSTEM_PROMPT);
 
-    const response = await this.chatModel.invoke([
-      systemMessage,
-      ...conversationMessages,
-    ]);
+    const response = await this.chatModel.invoke(
+      [systemMessage, ...conversationMessages],
+      config,
+    );
 
     return { messages: [response] };
   }
 
-  private async greetingNode(state: typeof MessagesAnnotation.State) {
-    const response = await this.routerModel.invoke([
-      new SystemMessage(GREETING_PROMPT),
-      state.messages[state.messages.length - 2],
-    ]);
+  private async greetingNode(
+    state: typeof MessagesAnnotation.State,
+    config: RunnableConfig,
+  ) {
+    const response = await this.routerModel.invoke(
+      [
+        new SystemMessage(GREETING_PROMPT),
+        state.messages[state.messages.length - 2],
+      ],
+      { ...config, response_format: { type: 'json_object' } },
+    );
     return { messages: [response] };
   }
 
-  private async refusalNode(state: typeof MessagesAnnotation.State) {
-    const response = await this.routerModel.invoke([
-      new SystemMessage(REFUSAL_PROMPT),
-      state.messages[state.messages.length - 2],
-    ]);
+  private async refusalNode(
+    state: typeof MessagesAnnotation.State,
+    config: RunnableConfig,
+  ) {
+    const response = await this.routerModel.invoke(
+      [
+        new SystemMessage(REFUSAL_PROMPT),
+        state.messages[state.messages.length - 2],
+      ],
+      { ...config, response_format: { type: 'json_object' } },
+    );
     return { messages: [response] };
   }
 
