@@ -8,7 +8,7 @@ export class AgentResponseHelper {
     };
 
     try {
-      let cleanJson = rawContent
+      const cleanJson = rawContent
         .replace(/```json/gi, '')
         .replace(/```/g, '')
         .trim();
@@ -44,14 +44,16 @@ export class AgentResponseHelper {
             ) {
               parsed.suggested_actions = innerParsed.suggested_actions;
             }
-          } catch (e) {}
+          } catch (_e) {
+            // ignore
+          }
         }
       } else {
         throw new Error('No JSON object found');
       }
 
       const leakPattern =
-        /(\n|\r\n)+\s*(?:\*\*|##|__)?\s*(Suggested Actions|Gợi ý hành động|Next Steps|Follow-up)[:\?]?\s*(?:\*\*|##|__)?[\s\S]*$/i;
+        /(\n|\r\n)+\s*(?:\*\*|##|__)?\s*(Suggested Actions|Gợi ý hành động|Next Steps|Follow-up)[:?]?\s*(?:\*\*|##|__)?[\s\S]*$/i;
 
       const match = parsed.response.match(leakPattern);
 
@@ -69,10 +71,10 @@ export class AgentResponseHelper {
           const extractedActions = leakedSection
             .split('\n')
             .map((line) => line.trim())
-            .filter((line) => /^(?:\d+\.|[\-\*])/.test(line))
+            .filter((line) => /^(?:\d+\.|[-*])/.test(line))
             .map((line) => {
               return line
-                .replace(/^(?:\d+\.|[\-\*])\s*/, '')
+                .replace(/^(?:\d+\.|[-*])\s*/, '')
                 .replace(/\*\*/g, '')
                 .trim();
             })
@@ -90,7 +92,7 @@ export class AgentResponseHelper {
       }
 
       return parsed;
-    } catch (error) {
+    } catch (_error) {
       let actions: string[] = ['More info', 'Other topics?'];
       let responseText = rawContent.replace(/```/g, '');
       const actionsMatch = rawContent.match(
@@ -102,7 +104,9 @@ export class AgentResponseHelper {
           if (Array.isArray(parsedActions) && parsedActions.length > 0) {
             actions = parsedActions;
           }
-        } catch (e) {}
+        } catch (_e) {
+          // ignore
+        }
       }
 
       const responseMatch = rawContent.match(
@@ -120,12 +124,28 @@ export class AgentResponseHelper {
           if (safeString.trim().length > 0) {
             responseText = safeString;
           }
-        } catch (e) {}
+        } catch (_e) {
+          // ignore
+        }
       } else {
         const jsonBlockMatch = rawContent.match(
           /\{[\s\S]*"suggested_actions"[\s\S]*\}/,
         );
         if (jsonBlockMatch) {
+          try {
+            const parsedBlock = JSON.parse(jsonBlockMatch[0]);
+            if (parsedBlock.response) {
+              responseText = parsedBlock.response;
+            }
+            if (
+              parsedBlock.suggested_actions &&
+              Array.isArray(parsedBlock.suggested_actions)
+            ) {
+              actions = parsedBlock.suggested_actions;
+            }
+          } catch (_e) {
+            // ignore
+          }
         }
       }
 

@@ -26,7 +26,6 @@ import { Reflector } from '@nestjs/core';
 import {
   DEFAULT_MAX_CONCURRENT_CALL,
   ERR_CODE,
-  HEADER_KEY,
   METADATA_KEY,
 } from '@shared/constants';
 
@@ -51,7 +50,6 @@ export class CallQueueInterceptor implements NestInterceptor {
     next: CallHandler<any>,
   ): Promise<Observable<any>> {
     const httpReq: any = ctx.switchToHttp().getRequest();
-    const logId = httpReq.headers[HEADER_KEY.LOG_ID];
 
     const userIP =
       httpReq.ip ||

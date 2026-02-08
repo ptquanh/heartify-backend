@@ -70,7 +70,7 @@ export const parseCsvLine = (text: string): string[] => {
 export const safeJsonParse = (jsonString: string): any => {
   try {
     return jsonString ? JSON.parse(jsonString) : null;
-  } catch (e) {
+  } catch (_e) {
     return null;
   }
 };

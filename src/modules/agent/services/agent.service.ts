@@ -12,7 +12,7 @@ import {
   START,
   StateGraph,
 } from '@langchain/langgraph';
-// @ts-ignore
+// @ts-expect-error
 import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { OperationResult } from 'mvc-common-toolkit';
 import { generateId } from 'opik';
