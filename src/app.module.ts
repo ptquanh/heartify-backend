@@ -14,7 +14,6 @@ import { GlobalModule } from '@modules/global/global.module';
 import { HealthRecordModule } from '@modules/health-record/health-record.module';
 import { OpikModule } from '@modules/opik/opik.module';
 import { RiskAssessmentModule } from '@modules/risk-assessment/risk-assessment.module';
-import { TestOpikModule } from '@modules/test-opik/test-opik.module';
 
 @Module({
   imports: [
@@ -45,7 +44,6 @@ import { TestOpikModule } from '@modules/test-opik/test-opik.module';
     OpikModule,
     EmailModule,
     AuthModule,
-    TestOpikModule,
     RiskAssessmentModule,
     HealthRecordModule,
     CloudinaryModule,
