@@ -1,5 +1,6 @@
 import { createHash } from 'crypto';
 import * as fs from 'fs';
+import { OperationResult } from 'mvc-common-toolkit';
 import * as path from 'path';
 import * as readline from 'readline';
 import { Repository } from 'typeorm';
@@ -7,9 +8,15 @@ import { Repository } from 'typeorm';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
+import {
+  generateEmptyPaginationResult,
+  generateNotFoundResult,
+  generatePaginationResult,
+} from '@shared/helpers/operation-result.helper';
 import { parseCsvLine, safeJsonParse } from '@shared/helpers/parser.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
+import { PaginationFoodPayloadDTO } from './dtos/food-payload.dto';
 import { Food } from './food.entity';
 
 @Injectable()
@@ -112,5 +119,33 @@ export class FoodService extends BaseCRUDService<Food> implements OnModuleInit {
     }
 
     this.logger.log(`Seeding complete. Total: ${totalProcessed}`);
+  }
+
+  async viewFoodDetails(id: string): Promise<OperationResult> {
+    const entity = await this.findByID(id);
+
+    if (!entity) {
+      return generateNotFoundResult('Food not found with id: ' + id);
+    }
+
+    return {
+      success: true,
+      data: entity,
+    };
+  }
+
+  async paginateFoods(dto: PaginationFoodPayloadDTO): Promise<OperationResult> {
+    const result = await this.paginate(dto);
+
+    if (!result) {
+      return generateEmptyPaginationResult();
+    }
+
+    return generatePaginationResult(
+      result.rows,
+      result.total,
+      dto.offset,
+      dto.limit,
+    );
   }
 }
