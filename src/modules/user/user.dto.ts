@@ -51,6 +51,16 @@ export class HealthConditionEntryDTO {
 }
 
 export class UpdateUserProfileDTO {
+  @ApiPropertyOptional({ example: 'John' })
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @ApiPropertyOptional({ example: 'Doe' })
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
   @ApiPropertyOptional({ example: '1990-01-01' })
   @IsOptional()
   @IsDateString()
