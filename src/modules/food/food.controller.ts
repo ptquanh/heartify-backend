@@ -3,6 +3,8 @@ import { HttpResponse } from 'mvc-common-toolkit';
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+import { User } from '@modules/user/entities/user.entity';
+
 import {
   ApiOperationError,
   ApiOperationSuccess,
@@ -48,7 +50,7 @@ export class FoodController {
     description:
       'Get food recommendations based on user health record and profile',
   })
-  async recommend(@RequestUser() user: { id: string }): Promise<HttpResponse> {
+  async recommend(@RequestUser() user: User): Promise<HttpResponse> {
     return this.foodRecommendationService.getRecommendations(user.id);
   }
 

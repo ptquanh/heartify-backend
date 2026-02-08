@@ -1,6 +1,7 @@
 import {
   Any,
   DeleteResult,
+  FindOptionsOrder,
   FindOptionsRelations,
   FindOptionsSelect,
   FindOptionsWhere,
@@ -105,6 +106,7 @@ export abstract class BaseCRUDService<T extends ObjectLiteral> {
       select?: FindOptionsSelect<T>;
       relations?: FindOptionsRelations<T>;
       withDeleted?: boolean;
+      order?: FindOptionsOrder<T>;
     } = { withDeleted: false },
   ): Promise<T> {
     return this.model.findOne({
@@ -112,6 +114,7 @@ export abstract class BaseCRUDService<T extends ObjectLiteral> {
       withDeleted: options.withDeleted,
       select: options.select,
       relations: options.relations,
+      order: options.order,
     });
   }
 

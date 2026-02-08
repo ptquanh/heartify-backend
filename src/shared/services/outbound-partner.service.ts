@@ -63,7 +63,7 @@ export abstract class OutboundPartnerService {
 
     const response = await this.httpService.send(method, url, requestOptions);
 
-    if (!response?.success) {
+    if (!response || !response.success || !response.data) {
       if (
         (typeof options.emitAudit === 'boolean' && options.emitAudit) ||
         (typeof options.emitAudit === 'function' &&

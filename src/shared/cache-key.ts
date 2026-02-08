@@ -3,3 +3,8 @@ export const resetPasswordCacheKey = (email: string) =>
 
 export const otpCacheKey = (id: string, action: string) =>
   `auth:otp:user_id:${id}:action:${action}`;
+
+export const foodRecommendationCacheKey = (
+  userId: string,
+  filterHash: string,
+) => `food:recommendation:user_id:${userId}:filter_hash:${filterHash}`;
