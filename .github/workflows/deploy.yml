@@ -1,0 +1,19 @@
+name: Deploy and Purge Cache
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Execute Deployment Script
+        run: |
+          cd /home/heartify/projects/heartify-backend
+          git config --global --add safe.directory /home/heartify/projects/heartify-backend
+          git reset --hard
+          git pull origin develop
+          chmod +x deploy.sh
+          ./deploy.sh
