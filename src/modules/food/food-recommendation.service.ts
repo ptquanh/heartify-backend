@@ -90,20 +90,20 @@ export class FoodRecommendationService extends OutboundPartnerService {
       diastolicBp: healthRecord.diastolicBp,
       totalCholesterol: Number(healthRecord.totalCholesterol),
       hdlCholesterol: Number(healthRecord.hdlCholesterol),
-      isSmoker: healthRecord.isSmoker,
-      isDiabetic: healthRecord.isDiabetic,
-      isTreatedHypertension: healthRecord.isTreatedHypertension,
       measurements: healthRecord.measurements as any, // assuming structure matches
       riskLevel: healthRecord.riskLevel,
       riskScore: Number(healthRecord.riskScore),
       riskPercentage: Number(healthRecord.riskPercentage),
       riskAlgorithm: healthRecord.riskAlgorithm,
       identifiedRiskFactors: healthRecord.identifiedRiskFactors as any[],
+      isDiabetic: userProfile.isDiabetic,
+      isTreatedHypertension: userProfile.isTreatedHypertension,
     };
 
     const userPreferencesDto: UserPreferencesDto = {
       id: userProfile.id,
       userId: userProfile.userId,
+      isSmoker: userProfile.isSmoker,
       dateOfBirth: new Date(userProfile.dateOfBirth)
         .toISOString()
         .split('T')[0], // format as YYYY-MM-DD
@@ -124,12 +124,6 @@ export class FoodRecommendationService extends OutboundPartnerService {
         ? {
             options: userProfile.allergies.options,
             details: userProfile.allergies.details,
-          }
-        : undefined,
-      medicalConditions: userProfile.medicalConditions
-        ? {
-            options: userProfile.medicalConditions.options,
-            details: userProfile.medicalConditions.details,
           }
         : undefined,
       medications: userProfile.medications

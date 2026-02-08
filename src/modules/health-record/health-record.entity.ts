@@ -66,15 +66,6 @@ export class HealthRecord extends AuditWithTimezone {
   })
   hdlCholesterol: number;
 
-  @Column({ name: 'is_smoker', type: 'boolean', default: false })
-  isSmoker: boolean;
-
-  @Column({ name: 'is_diabetic', type: 'boolean', default: false })
-  isDiabetic: boolean;
-
-  @Column({ name: 'is_treated_hypertension', type: 'boolean', default: false })
-  isTreatedHypertension: boolean;
-
   @Column({
     name: 'measurements',
     type: 'jsonb',

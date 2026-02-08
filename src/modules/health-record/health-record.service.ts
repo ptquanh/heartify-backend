@@ -60,9 +60,9 @@ export class HealthRecordService extends BaseCRUDService<HealthRecord> {
     const riskPayload: RiskAssessmentPayloadDto = {
       age,
       gender: user.profile.gender,
-      isSmoker: dto.isSmoker,
-      isDiabetic: dto.isDiabetic,
-      isTreatedHypertension: dto.isTreatedHypertension,
+      isSmoker: user.profile.isSmoker,
+      isDiabetic: user.profile.isDiabetic,
+      isTreatedHypertension: user.profile.isTreatedHypertension,
       systolicBp: dto.systolicBp,
       totalCholesterol: dto.totalCholesterol,
       hdlCholesterol: dto.hdlCholesterol,

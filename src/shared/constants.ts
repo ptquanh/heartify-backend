@@ -156,3 +156,25 @@ export enum HEIGHT_UNIT {
   CM = 'cm',
   IN = 'in',
 }
+
+export enum EXERCISES_GROUP {
+  CARDIO = 'cardio',
+  LIGHT_RECOVERY = 'light_recovery',
+  FLEXIBILITY = 'flexibility',
+  STRENGTH = 'strength',
+  SPORTS = 'sports',
+  MIXED = 'mixed',
+}
+
+export enum EXERCISES_INTENSITY {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+}
+
+export enum EXERCISES_FREQUENCY {
+  OCCASIONAL = 'occasional',
+  REGULAR = 'regular',
+  ACTIVE = 'active',
+  VERY_ACTIVE = 'very_active',
+}

@@ -48,15 +48,6 @@ export class UserHealthRecordDto {
   @IsNumber()
   hdlCholesterol: number;
 
-  @IsBoolean()
-  isSmoker: boolean;
-
-  @IsBoolean()
-  isDiabetic: boolean;
-
-  @IsBoolean()
-  isTreatedHypertension: boolean;
-
   @ValidateNested()
   @Type(() => MeasurementsDto)
   measurements: MeasurementsDto;
@@ -76,6 +67,12 @@ export class UserHealthRecordDto {
   @IsArray()
   @IsString({ each: true })
   identifiedRiskFactors: string[];
+
+  @IsBoolean()
+  isDiabetic: boolean;
+
+  @IsBoolean()
+  isTreatedHypertension: boolean;
 }
 
 export class MeasurementValueDto {
@@ -125,6 +122,9 @@ export class UserPreferencesDto {
   @IsString()
   country: string;
 
+  @IsBoolean()
+  isSmoker: boolean;
+
   @ValidateNested()
   @Type(() => LatestMeasurementsDto)
   latestMeasurements: LatestMeasurementsDto;
@@ -133,11 +133,6 @@ export class UserPreferencesDto {
   @ValidateNested()
   @Type(() => HealthConditionEntryDto)
   allergies?: HealthConditionEntryDto;
-
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => HealthConditionEntryDto)
-  medicalConditions?: HealthConditionEntryDto;
 
   @IsOptional()
   @ValidateNested()

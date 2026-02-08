@@ -9,6 +9,11 @@ import {
 import { AuditWithTimezone } from '@modules/audit/audit.entity';
 import { Gender } from '@modules/risk-assessment/risk-assessment.constants';
 
+import {
+  EXERCISES_FREQUENCY,
+  EXERCISES_GROUP,
+  EXERCISES_INTENSITY,
+} from '@shared/constants';
 import { BodyMetrics } from '@shared/interfaces';
 
 import { User } from './user.entity';
@@ -16,6 +21,12 @@ import { User } from './user.entity';
 export interface HealthConditionEntry {
   options: string[];
   details?: string;
+}
+
+export interface ExerciseRoutine {
+  exerciseGroup: EXERCISES_GROUP;
+  frequency: EXERCISES_FREQUENCY;
+  intensity: EXERCISES_INTENSITY;
 }
 
 @Entity('user_profiles')
@@ -57,15 +68,27 @@ export class UserProfile extends AuditWithTimezone {
   @Column({ name: 'country', type: 'varchar', length: 3, nullable: true })
   country: string;
 
+  @Column({ name: 'is_smoker', type: 'boolean', default: false })
+  isSmoker: boolean;
+
+  @Column({ name: 'is_diabetic', type: 'boolean', default: false })
+  isDiabetic: boolean;
+
+  @Column({ name: 'is_treated_hypertension', type: 'boolean', default: false })
+  isTreatedHypertension: boolean;
+
   @Column({ name: 'allergies', type: 'jsonb', nullable: true })
   allergies: HealthConditionEntry;
-
-  @Column({ name: 'medical_conditions', type: 'jsonb', nullable: true })
-  medicalConditions: HealthConditionEntry;
 
   @Column({ name: 'medications', type: 'jsonb', nullable: true })
   medications: HealthConditionEntry;
 
   @Column({ name: 'physical_limitations', type: 'jsonb', nullable: true })
   physicalLimitations: HealthConditionEntry;
+
+  @Column({ name: 'goals', type: 'jsonb', nullable: true })
+  goals: string[];
+
+  @Column({ name: 'exercise_routines', type: 'jsonb', nullable: true })
+  exerciseRoutines: ExerciseRoutine[];
 }

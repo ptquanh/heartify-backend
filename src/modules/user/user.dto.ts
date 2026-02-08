@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsDateString,
   IsEmail,
   IsEnum,
@@ -14,6 +15,11 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { BodyMetricsDTO } from '@modules/health-record/health-record.dto';
 import { Gender } from '@modules/risk-assessment/risk-assessment.constants';
 
+import {
+  EXERCISES_FREQUENCY,
+  EXERCISES_GROUP,
+  EXERCISES_INTENSITY,
+} from '@shared/constants';
 import {
   OnlyTextAndNumbers,
   TrimAndLowercase,
@@ -50,6 +56,23 @@ export class HealthConditionEntryDTO {
   details?: string;
 }
 
+export class ExerciseRoutineDTO {
+  @ApiPropertyOptional({ enum: EXERCISES_GROUP })
+  @IsOptional()
+  @IsEnum(EXERCISES_GROUP)
+  exercisesGroup: EXERCISES_GROUP;
+
+  @ApiPropertyOptional({ enum: EXERCISES_FREQUENCY })
+  @IsOptional()
+  @IsEnum(EXERCISES_FREQUENCY)
+  frequency: EXERCISES_FREQUENCY;
+
+  @ApiPropertyOptional({ enum: EXERCISES_INTENSITY })
+  @IsOptional()
+  @IsEnum(EXERCISES_INTENSITY)
+  intensity: EXERCISES_INTENSITY;
+}
+
 export class UpdateUserProfileDTO {
   @ApiPropertyOptional({ example: 'John' })
   @IsOptional()
@@ -60,6 +83,21 @@ export class UpdateUserProfileDTO {
   @IsOptional()
   @IsString()
   lastName?: string;
+
+  @ApiPropertyOptional({ example: false })
+  @IsOptional()
+  @IsBoolean()
+  isSmoker?: boolean;
+
+  @ApiPropertyOptional({ example: false })
+  @IsOptional()
+  @IsBoolean()
+  isDiabetic?: boolean;
+
+  @ApiPropertyOptional({ example: false })
+  @IsOptional()
+  @IsBoolean()
+  isTreatedHypertension?: boolean;
 
   @ApiPropertyOptional({ example: '1990-01-01' })
   @IsOptional()
@@ -92,12 +130,6 @@ export class UpdateUserProfileDTO {
   @IsOptional()
   @ValidateNested()
   @Type(() => HealthConditionEntryDTO)
-  medicalConditions?: HealthConditionEntryDTO;
-
-  @ApiPropertyOptional({ type: HealthConditionEntryDTO })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => HealthConditionEntryDTO)
   medications?: HealthConditionEntryDTO;
 
   @ApiPropertyOptional({ type: HealthConditionEntryDTO })
@@ -105,4 +137,16 @@ export class UpdateUserProfileDTO {
   @ValidateNested()
   @Type(() => HealthConditionEntryDTO)
   physicalLimitations?: HealthConditionEntryDTO;
+
+  @ApiPropertyOptional({ example: ['Lose weight'] })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  goals?: string[];
+
+  @ApiPropertyOptional({ type: [ExerciseRoutineDTO] })
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => ExerciseRoutineDTO)
+  exerciseRoutines?: ExerciseRoutineDTO[];
 }

@@ -9,7 +9,7 @@ services:
     environment:
       NODE_ENV: '${NODE_ENV:-development}'
       PORT: '${PORT:-3030}'
-      APP_URL: '${APP_URL}'
+      APP_PUBLIC_URL: '${APP_PUBLIC_URL}'
       APP_NAME: '${APP_NAME}'
       ENABLE_SWAGGER: '${ENABLE_SWAGGER:-true}'
       ENABLE_CORS: '${ENABLE_CORS:-true}'

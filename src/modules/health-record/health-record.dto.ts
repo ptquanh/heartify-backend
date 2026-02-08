@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import {
-  IsBoolean,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -78,18 +77,6 @@ export class CreateHealthRecordDTO {
   @Min(10)
   @Max(150)
   hdlCholesterol: number;
-
-  @ApiProperty({ description: 'Is Smoker', example: false })
-  @IsBoolean()
-  isSmoker: boolean;
-
-  @ApiProperty({ description: 'Is Diabetic', example: false })
-  @IsBoolean()
-  isDiabetic: boolean;
-
-  @ApiProperty({ description: 'Is Treated for Hypertension', example: false })
-  @IsBoolean()
-  isTreatedHypertension: boolean;
 
   @ApiPropertyOptional({ type: BodyMetricsDTO })
   @IsOptional()
