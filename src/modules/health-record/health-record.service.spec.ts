@@ -13,7 +13,7 @@ import { UserService } from '@modules/user/user.service';
 
 import { ERR_CODE } from '@shared/constants';
 
-import { CreateHealthRecordDto } from './health-record.dto';
+import { CreateHealthRecordDTO } from './health-record.dto';
 import { HealthRecord } from './health-record.entity';
 import { HealthRecordService } from './health-record.service';
 
@@ -77,7 +77,7 @@ describe('HealthRecordService', () => {
 
   describe('createHealthRecord', () => {
     const userId = 'user-123';
-    const dto: CreateHealthRecordDto = {
+    const dto: CreateHealthRecordDTO = {
       systolicBp: 120,
       diastolicBp: 80,
       totalCholesterol: 200,
@@ -162,6 +162,60 @@ describe('HealthRecordService', () => {
       const result = await service.createHealthRecord(userId, dto);
       expect(result.success).toBe(false);
       expect(result.code).toBe(ERR_CODE.RISK_ASSESSMENT_FAILED);
+    });
+
+    it('should calculate BMI if weight and height are provided', async () => {
+      const dtoWithMeasurements: CreateHealthRecordDTO = {
+        ...dto,
+        measurements: {
+          weight: { value: 70, unit: 'kg' },
+          height: { value: 175, unit: 'cm' },
+        },
+      };
+
+      mockUserService.findOne.mockResolvedValue({
+        id: userId,
+        profile: {
+          dateOfBirth: new Date('1990-01-01'),
+          gender: Gender.MALE,
+        },
+      });
+      mockUserService.getAge.mockReturnValue(36);
+
+      mockRiskService.calculateRisk.mockReturnValue({
+        success: true,
+        data: {
+          riskLevel: RiskLevel.LOW,
+          riskScore: 1,
+          riskPercentage: 1,
+          algorithmUsed: RiskAssessmentAlgorithm.ASCVD,
+          riskFactors: [],
+        },
+      });
+
+      const expectedBmi = 22.86; // 70 / (1.75 * 1.75) = 22.857... -> 22.86
+      const savedEntity = {
+        ...dtoWithMeasurements,
+        measurements: {
+          ...dtoWithMeasurements.measurements,
+          bmi: expectedBmi,
+        },
+        id: 'rec-bmi',
+        userId,
+      };
+
+      mockRepo.save.mockResolvedValue(savedEntity);
+      mockRepo.findOneBy.mockResolvedValue(savedEntity); // BaseCRUDService might use findOne
+
+      await service.createHealthRecord(userId, dtoWithMeasurements);
+
+      expect(mockRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          measurements: expect.objectContaining({
+            bmi: expectedBmi,
+          }),
+        }),
+      );
     });
   });
 });

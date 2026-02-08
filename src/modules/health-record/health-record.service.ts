@@ -8,7 +8,7 @@ import { RiskAssessmentPayloadDto } from '@modules/risk-assessment/risk-assessme
 import { RiskAssessmentService } from '@modules/risk-assessment/risk-assessment.service';
 import { UserService } from '@modules/user/user.service';
 
-import { ERR_CODE } from '@shared/constants';
+import { ERR_CODE, HEIGHT_UNIT, WEIGHT_UNIT } from '@shared/constants';
 import {
   generateNotFoundResult,
   generateSuccessResult,
@@ -79,6 +79,16 @@ export class HealthRecordService extends BaseCRUDService<HealthRecord> {
       );
     }
 
+    if (dto.measurements?.weight && dto.measurements?.height) {
+      const bmi = this.calculateBMI(
+        dto.measurements.weight,
+        dto.measurements.height,
+      );
+      if (bmi) {
+        dto.measurements.bmi = bmi;
+      }
+    }
+
     const healthRecord = await this.create({
       ...dto,
       userId,
@@ -92,6 +102,30 @@ export class HealthRecordService extends BaseCRUDService<HealthRecord> {
     });
 
     return generateSuccessResult(healthRecord);
+  }
+
+  private calculateBMI(
+    weight: { value: number; unit: string },
+    height: { value: number; unit: string },
+  ): number {
+    let weightInKg = weight.value;
+    if (weight.unit === WEIGHT_UNIT.LB) {
+      weightInKg = weight.value * 0.453592;
+    }
+
+    let heightInMeters = height.value;
+    if (height.unit === HEIGHT_UNIT.CM) {
+      heightInMeters = height.value / 100;
+    } else if (height.unit === HEIGHT_UNIT.IN) {
+      heightInMeters = height.value * 0.0254;
+    }
+
+    if (heightInMeters <= 0) {
+      return 0;
+    }
+
+    const bmi = weightInKg / (heightInMeters * heightInMeters);
+    return parseFloat(bmi.toFixed(2));
   }
 
   async getHealthRecordById(

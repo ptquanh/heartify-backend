@@ -1,5 +1,7 @@
 import { QueryRunner } from 'typeorm';
 
+import { HEIGHT_UNIT, WEIGHT_UNIT } from './constants';
+
 export interface PaginationResult<T = any> {
   rows: T[];
   total: number;
@@ -38,17 +40,14 @@ export interface RequestContextData {
   parentSpan?: string;
 }
 
-export type WeightUnit = 'kg' | 'lb';
-export type HeightUnit = 'cm' | 'inch';
-
 export interface BodyMetrics {
   weight?: {
     value: number;
-    unit: WeightUnit;
+    unit: WEIGHT_UNIT;
   };
   height?: {
     value: number;
-    unit: HeightUnit;
+    unit: HEIGHT_UNIT;
   };
   bmi?: number;
 }

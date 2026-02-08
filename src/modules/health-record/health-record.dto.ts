@@ -14,8 +14,9 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { RiskLevel } from '@modules/risk-assessment/risk-assessment.constants';
 
+import { HEIGHT_UNIT, WEIGHT_UNIT } from '@shared/constants';
 import { PaginationDTO } from '@shared/dtos/pagination.dto';
-import { BodyMetrics, HeightUnit, WeightUnit } from '@shared/interfaces';
+import { BodyMetrics } from '@shared/interfaces';
 
 export class MeasurementValueDTO {
   @ApiProperty({ description: 'Value of measurement' })
@@ -34,7 +35,7 @@ export class BodyMetricsDTO implements BodyMetrics {
   @Type(() => MeasurementValueDTO)
   weight?: {
     value: number;
-    unit: WeightUnit;
+    unit: WEIGHT_UNIT;
   };
 
   @ApiPropertyOptional({ type: MeasurementValueDTO })
@@ -43,7 +44,7 @@ export class BodyMetricsDTO implements BodyMetrics {
   @Type(() => MeasurementValueDTO)
   height?: {
     value: number;
-    unit: HeightUnit;
+    unit: HEIGHT_UNIT;
   };
 
   @ApiPropertyOptional({ example: 22.5 })

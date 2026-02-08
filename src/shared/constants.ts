@@ -146,3 +146,13 @@ export enum AGENT_CHAT_MESSAGE_ROLE {
   ASSISTANT = 'assistant',
   SYSTEM = 'system',
 }
+
+export enum WEIGHT_UNIT {
+  KG = 'kg',
+  LB = 'lb',
+}
+
+export enum HEIGHT_UNIT {
+  CM = 'cm',
+  IN = 'in',
+}
