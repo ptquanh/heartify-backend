@@ -41,7 +41,7 @@ export class HealthRecord extends AuditWithTimezone {
     name: 'health_record_name',
     type: 'varchar',
     length: 255,
-    unique: true,
+    nullable: true,
   })
   healthRecordName: string;
 
