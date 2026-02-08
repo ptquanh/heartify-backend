@@ -1,6 +1,6 @@
 import { HttpResponse } from 'mvc-common-toolkit';
 
-import { Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import {
@@ -30,18 +30,6 @@ export class FoodController {
     private readonly foodRecommendationService: FoodRecommendationService,
   ) {}
 
-  @Get(':id')
-  @ApiOperation({
-    summary: 'Get Food Detail',
-    description: 'Retrieve food details by ID',
-  })
-  @ApiOperationSuccess(Food)
-  async getDetail(
-    @Param() params: GetFoodDetailPayloadDTO,
-  ): Promise<HttpResponse> {
-    return this.foodService.viewFoodDetails(params.id);
-  }
-
   @Get()
   @ApiOperation({
     summary: 'Get Paginated Foods',
@@ -54,13 +42,25 @@ export class FoodController {
     return this.foodService.paginateFoods(dto);
   }
 
-  @Post('recommend')
+  @Get('recommend')
   @ApiOperation({
     summary: 'Get Food Recommendations',
     description:
       'Get food recommendations based on user health record and profile',
   })
-  async recommend(@RequestUser() user: { id: string }) {
+  async recommend(@RequestUser() user: { id: string }): Promise<HttpResponse> {
     return this.foodRecommendationService.getRecommendations(user.id);
+  }
+
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Get Food Detail',
+    description: 'Retrieve food details by ID',
+  })
+  @ApiOperationSuccess(Food)
+  async getDetail(
+    @Param() params: GetFoodDetailPayloadDTO,
+  ): Promise<HttpResponse> {
+    return this.foodService.viewFoodDetails(params.id);
   }
 }

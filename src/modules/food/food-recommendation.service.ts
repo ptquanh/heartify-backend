@@ -2,6 +2,7 @@ import {
   AuditService,
   HttpRequestOption,
   HttpService,
+  OperationResult,
 } from 'mvc-common-toolkit';
 
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
@@ -11,7 +12,7 @@ import { HealthRecordService } from '@modules/health-record/health-record.servic
 import { UserProfile } from '@modules/user/entities/user-profile.entity';
 import { UserService } from '@modules/user/user.service';
 
-import { APP_ACTION, INJECTION_TOKEN } from '@shared/constants';
+import { INJECTION_TOKEN } from '@shared/constants';
 import { OutboundPartnerService } from '@shared/services/outbound-partner.service';
 
 import {
@@ -48,7 +49,7 @@ export class FoodRecommendationService extends OutboundPartnerService {
     };
   }
 
-  async getRecommendations(userId: string) {
+  async getRecommendations(userId: string): Promise<OperationResult> {
     const healthRecord = await this.healthRecordService.model.findOne({
       where: { userId },
       order: { recordedAt: 'DESC' },
@@ -69,11 +70,12 @@ export class FoodRecommendationService extends OutboundPartnerService {
 
     const payload = this.buildPayload(healthRecord, user.profile);
 
-    const response = await this.sendToPartner('post', '/recommend', payload, {
-      appAction: APP_ACTION.SEND_TO_PARTNER, // You might want to define a specific action constant
-    });
+    const response = await this.sendToPartner('post', '/recommend', payload);
 
-    return response;
+    return {
+      success: true,
+      data: response.data,
+    };
   }
 
   private buildPayload(
@@ -147,8 +149,8 @@ export class FoodRecommendationService extends OutboundPartnerService {
     };
 
     return {
-      user_health_record: healthRecordDto,
-      user_preferences: userPreferencesDto,
+      user_health_record: JSON.stringify(healthRecordDto),
+      user_preferences: JSON.stringify(userPreferencesDto),
     };
   }
 }

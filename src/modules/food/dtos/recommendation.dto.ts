@@ -3,7 +3,6 @@ import {
   IsArray,
   IsBoolean,
   IsNumber,
-  IsObject,
   IsOptional,
   IsString,
   ValidateNested,
@@ -158,11 +157,9 @@ export class UserPreferencesDto {
 }
 
 export class RecommendationRequestDto {
-  @ValidateNested()
-  @Type(() => UserHealthRecordDto)
-  user_health_record: UserHealthRecordDto;
+  @IsString()
+  user_health_record: string;
 
-  @ValidateNested()
-  @Type(() => UserPreferencesDto)
-  user_preferences: UserPreferencesDto;
+  @IsString()
+  user_preferences: string;
 }

@@ -63,7 +63,7 @@ export abstract class OutboundPartnerService {
 
     const response = await this.httpService.send(method, url, requestOptions);
 
-    if (!response.data?.success) {
+    if (!response?.success) {
       if (
         (typeof options.emitAudit === 'boolean' && options.emitAudit) ||
         (typeof options.emitAudit === 'function' &&
@@ -72,7 +72,7 @@ export abstract class OutboundPartnerService {
         this.auditService.emitLog(
           new ErrorLog({
             logId: getLogId(requestOptions),
-            message: response.data?.message,
+            message: response?.message,
             action: options?.appAction,
             payload: JSON.stringify(payload, stringUtils.maskFn),
             metadata: {
@@ -86,15 +86,15 @@ export abstract class OutboundPartnerService {
 
       return {
         success: false,
-        message: response.data?.message,
-        code: response.data?.code,
-        httpCode: response.data?.httpCode,
+        message: response?.message,
+        code: response?.code,
+        httpCode: response?.httpCode,
       };
     }
 
     return {
       success: true,
-      data: response.data?.data,
+      data: response?.data,
     };
   }
 }
