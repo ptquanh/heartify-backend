@@ -1,7 +1,6 @@
 import { LessThan, Repository } from 'typeorm';
 
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { AGENT_CHAT_MESSAGE_CLEANUP_THRESHOLD_MS } from '../agent.constant';
@@ -16,7 +15,7 @@ export class AgentCleanupService {
     private readonly chatMessageRepo: Repository<AgentChatMessage>,
   ) {}
 
-  @Cron(CronExpression.EVERY_HOUR)
+  // @Cron(CronExpression.EVERY_HOUR)
   async handleCleanup() {
     this.logger.log('Running Agent cleanup task...');
 
