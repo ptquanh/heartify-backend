@@ -271,7 +271,12 @@ export class AuthService {
     data: LoginDTO,
   ): Promise<OperationResult<{ accessToken: string; user: UserAuthProfile }>> {
     try {
-      const user = await this.userService.findOne({ email: data.email });
+      const identifier = data.usernameOrEmail;
+      const query = isEmail(identifier)
+        ? { email: identifier }
+        : { username: identifier };
+
+      const user = await this.userService.findOne(query);
 
       if (!user) {
         return generateNotFoundResult(
