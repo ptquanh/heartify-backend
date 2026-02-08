@@ -122,7 +122,7 @@ export class FoodService extends BaseCRUDService<Food> implements OnModuleInit {
   }
 
   async viewFoodDetails(id: string): Promise<OperationResult> {
-    const entity = await this.findByID(id);
+    const entity = await this.findOne({ hashId: id });
 
     if (!entity) {
       return generateNotFoundResult('Food not found with id: ' + id);
