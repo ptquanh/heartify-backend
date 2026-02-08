@@ -1,3 +1,4 @@
+import { isEmail } from 'class-validator';
 import {
   AuditService,
   CacheService,
@@ -213,7 +214,12 @@ export class AuthService {
     dto: VerifyOtpDTO,
   ): Promise<OperationResult> {
     try {
-      const user = await this.userService.findByID(dto.userId);
+      const identifier = dto.usernameOrEmail;
+      const query = isEmail(identifier)
+        ? { email: identifier }
+        : { username: identifier };
+
+      const user = await this.userService.findOne(query);
 
       if (!user) {
         return generateNotFoundResult(

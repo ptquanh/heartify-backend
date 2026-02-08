@@ -57,11 +57,12 @@ export class RegisterDTO {
 
 export class VerifyOtpDTO {
   @ApiProperty({
-    description: 'The user id',
+    description: 'The username or email of the user',
   })
   @IsNotEmpty()
   @IsString()
-  userId: string;
+  @TrimAndLowercase()
+  usernameOrEmail: string;
 
   @ApiProperty({
     description: 'The otp code',
