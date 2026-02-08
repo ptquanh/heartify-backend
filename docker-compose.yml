@@ -123,6 +123,15 @@ services:
     networks:
       - heartify-network
 
+  adminer:
+    image: adminer:latest
+    container_name: heartify-adminer
+    restart: unless-stopped
+    ports:
+      - '8082:8080'
+    networks:
+      - heartify-network
+
 networks:
   heartify-network:
     name: heartify-network
