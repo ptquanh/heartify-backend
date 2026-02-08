@@ -53,6 +53,13 @@ export class BodyMetricsDTO implements BodyMetrics {
 }
 
 export class CreateHealthRecordDTO {
+  @ApiPropertyOptional({
+    description: 'Health Record Name',
+  })
+  @IsString()
+  @IsOptional()
+  healthRecordName?: string;
+
   @ApiProperty({ description: 'Systolic Blood Pressure', example: 120 })
   @IsNumber()
   @Min(50)

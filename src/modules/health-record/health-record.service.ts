@@ -1,5 +1,5 @@
 import { OperationResult, PaginationResult } from 'mvc-common-toolkit';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -89,8 +89,18 @@ export class HealthRecordService extends BaseCRUDService<HealthRecord> {
       }
     }
 
+    const totalHealthRecordsWithoutName = await this.count({
+      userId,
+      healthRecordName: Like('Health Record #%'),
+    });
+
+    const healthRecordName =
+      dto.healthRecordName ||
+      `Health Record #${totalHealthRecordsWithoutName + 1}`;
+
     const healthRecord = await this.create({
       ...dto,
+      healthRecordName,
       userId,
       recordedAt: new Date(),
       ageAtRecord: age,
