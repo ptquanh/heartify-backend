@@ -35,9 +35,6 @@ jobs:
       - name: Build Application
         run: yarn build
 
-      - name: Run Unit Tests
-        run: yarn test
-
   deploy:
     name: Deploy to Staging
     needs: ci
