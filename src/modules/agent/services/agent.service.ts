@@ -12,7 +12,7 @@ import {
   START,
   StateGraph,
 } from '@langchain/langgraph';
-// @ts-expect-error
+// @ts-expect-error ToolNode has type issue
 import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { OperationResult } from 'mvc-common-toolkit';
 import { generateId } from 'opik';
