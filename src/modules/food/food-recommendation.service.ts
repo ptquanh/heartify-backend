@@ -102,7 +102,9 @@ export class FoodRecommendationService extends OutboundPartnerService {
     const userPreferencesDto: UserPreferencesDto = {
       id: userProfile.id,
       userId: userProfile.userId,
-      dateOfBirth: userProfile.dateOfBirth.toISOString().split('T')[0], // format as YYYY-MM-DD
+      dateOfBirth: new Date(userProfile.dateOfBirth)
+        .toISOString()
+        .split('T')[0], // format as YYYY-MM-DD
       gender: userProfile.gender,
       country: userProfile.country,
       latestMeasurements: {
