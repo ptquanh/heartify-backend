@@ -39,6 +39,8 @@ export class CloudinaryService {
       timestamp,
       cloudName: this.cloudinaryService.config().cloud_name,
       apiKey: this.cloudinaryService.config().api_key,
+      expireAt: timestamp + TTL_5_MINUTES,
+      uploadPreset: 'user_limited',
     });
   }
 }
