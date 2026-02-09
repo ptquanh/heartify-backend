@@ -14,7 +14,6 @@ import { ConfigService } from '@nestjs/config';
 import { HealthRecordService } from '@modules/health-record/health-record.service';
 import { UserService } from '@modules/user/user.service';
 
-import { foodRecommendationCacheKey } from '@shared/cache-key';
 // Reusing similar key pattern or creating new one?
 // Wait, I should create a new cache key function or use a generic one.
 // Let's assume I can reuse the pattern but change the prefix.
@@ -110,7 +109,7 @@ export class ExerciseRecommendationService extends OutboundPartnerService {
       };
     }
 
-    const response = await this.sendToPartner('post', '/recommend', payload);
+    const response = await this.sendToPartner('post', '/plan', payload);
     if (!response.success) {
       return generateInternalServerResult();
     }
