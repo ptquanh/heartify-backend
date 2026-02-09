@@ -39,6 +39,7 @@ export class HealthRecord extends AuditWithTimezone {
   @Column({
     name: 'health_record_type',
     type: 'varchar',
+    nullable: true,
   })
   healthRecordType: HealthRecordType;
 
