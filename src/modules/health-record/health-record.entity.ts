@@ -17,6 +17,12 @@ import { User } from '@modules/user/entities/user.entity';
 
 import { BodyMetrics } from '@shared/interfaces';
 
+export enum HealthRecordType {
+  GENERAL_CHECKUP = 'GENERAL_CHECKUP',
+  HOME_MEASUREMENT = 'HOME_MEASUREMENT',
+  HOSPITAL_VISIT = 'HOSPITAL_VISIT',
+}
+
 @Entity('health_records')
 @Index('idx_health_history', ['userId', 'recordedAt'])
 export class HealthRecord extends AuditWithTimezone {
@@ -31,6 +37,26 @@ export class HealthRecord extends AuditWithTimezone {
   userId: string;
 
   @Column({
+    name: 'health_record_type',
+    type: 'varchar',
+  })
+  healthRecordType: HealthRecordType;
+
+  @Column({
+    name: 'reason',
+    type: 'text',
+    nullable: true,
+  })
+  reason: string;
+
+  @Column({
+    name: 'doctor_name',
+    type: 'varchar',
+    nullable: true,
+  })
+  doctorName: string;
+
+  @Column({
     name: 'recorded_at',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
@@ -40,7 +66,6 @@ export class HealthRecord extends AuditWithTimezone {
   @Column({
     name: 'health_record_name',
     type: 'varchar',
-    length: 255,
     nullable: true,
   })
   healthRecordName: string;

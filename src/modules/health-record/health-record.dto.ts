@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsEnum,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -16,6 +17,8 @@ import { RiskLevel } from '@modules/risk-assessment/risk-assessment.constants';
 import { HEIGHT_UNIT, WEIGHT_UNIT } from '@shared/constants';
 import { PaginationDTO } from '@shared/dtos/pagination.dto';
 import { BodyMetrics } from '@shared/interfaces';
+
+import { HealthRecordType } from './health-record.entity';
 
 export class MeasurementValueDTO {
   @ApiProperty({ description: 'Value of measurement' })
@@ -97,6 +100,27 @@ export class CreateHealthRecordDTO {
   @ValidateNested()
   @Type(() => BodyMetricsDTO)
   measurements?: BodyMetricsDTO;
+
+  @ApiProperty({
+    description: 'Health Record Type',
+  })
+  @IsEnum(HealthRecordType)
+  @IsNotEmpty()
+  healthRecordType: HealthRecordType;
+
+  @ApiPropertyOptional({
+    description: 'Reason',
+  })
+  @IsString()
+  @IsOptional()
+  reason?: string;
+
+  @ApiPropertyOptional({
+    description: 'Doctor Name',
+  })
+  @IsString()
+  @IsOptional()
+  doctorName?: string;
 }
 
 export class UpdateHealthRecordDTO extends PartialType(CreateHealthRecordDTO) {}

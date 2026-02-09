@@ -9,6 +9,7 @@ import { AuditModule } from '@modules/audit/audit.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { CloudinaryModule } from '@modules/cloudinary/cloudinary.module';
 import { EmailModule } from '@modules/email/email.module';
+import { ExerciseModule } from '@modules/exercise/exercise.module';
 import { FoodModule } from '@modules/food/food.module';
 import { GlobalModule } from '@modules/global/global.module';
 import { HealthRecordModule } from '@modules/health-record/health-record.module';
@@ -48,6 +49,7 @@ import { RiskAssessmentModule } from '@modules/risk-assessment/risk-assessment.m
     HealthRecordModule,
     CloudinaryModule,
     FoodModule,
+    ExerciseModule,
     AgentModule,
   ],
 })
