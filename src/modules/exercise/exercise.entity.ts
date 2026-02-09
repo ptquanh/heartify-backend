@@ -4,8 +4,8 @@ import { AuditWithTimezone } from '@modules/audit/audit.entity';
 
 @Entity('exercises')
 export class Exercise extends AuditWithTimezone {
-  @PrimaryColumn({ name: 'id', type: 'varchar' })
-  id: string;
+  @PrimaryColumn({ name: 'hash_id', type: 'varchar' })
+  hashId: string;
 
   @Column({ name: 'name', type: 'varchar', length: 255 })
   name: string;

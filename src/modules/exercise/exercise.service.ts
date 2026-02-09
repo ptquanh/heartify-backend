@@ -1,3 +1,4 @@
+import { createHash } from 'crypto';
 import * as fs from 'fs';
 import { OperationResult } from 'mvc-common-toolkit';
 import * as path from 'path';
@@ -12,7 +13,7 @@ import {
   generateNotFoundResult,
   generatePaginationResult,
 } from '@shared/helpers/operation-result.helper';
-import { parseCsvLine, safeJsonParse } from '@shared/helpers/parser.helper';
+import { parseCsvLine } from '@shared/helpers/parser.helper';
 import { BaseCRUDService } from '@shared/services/base-crud.service';
 
 import { PaginationExercisePayloadDTO } from './dtos/exercise-payload.dto';
@@ -132,7 +133,10 @@ export class ExerciseService
           bodyPart: row[0],
           equipment: row[1],
           gifUrl: row[2],
-          id: row[3], // id is at index 3
+          hashId: createHash('sha256')
+            .update(row[3])
+            .digest('hex')
+            .slice(0, 16), // id is at index 3, hash it
           name: row[4],
           target: row[5],
           secondaryMuscles,
@@ -160,11 +164,13 @@ export class ExerciseService
     this.logger.log(`Seeding complete. Total: ${totalProcessed}`);
   }
 
-  async viewExerciseDetails(id: string): Promise<OperationResult> {
-    const entity = await this.findOne({ id });
+  async viewExerciseDetails(hashId: string): Promise<OperationResult> {
+    const entity = await this.findOne({ hashId });
 
     if (!entity) {
-      return generateNotFoundResult('Exercise not found with id: ' + id);
+      return generateNotFoundResult(
+        'Exercise not found with hashId: ' + hashId,
+      );
     }
 
     return {
