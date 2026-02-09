@@ -45,6 +45,14 @@ export class HealthRecord extends AuditWithTimezone {
   })
   healthRecordName: string;
 
+  @Column({
+    name: 'medical_facility_name',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  medicalFacilityName: string;
+
   @Column({ name: 'age_at_record', type: 'integer' })
   ageAtRecord: number;
 

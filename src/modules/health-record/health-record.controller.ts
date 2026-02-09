@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -23,6 +24,7 @@ import {
   CreateHealthRecordDTO,
   HealthRecordPaginationDTO,
   HealthRecordResponseDTO,
+  UpdateHealthRecordDTO,
 } from './health-record.dto';
 import { HealthRecordService } from './health-record.service';
 
@@ -71,5 +73,19 @@ export class HealthRecordController {
     @Param('id') id: string,
   ): Promise<any> {
     return this.healthRecordService.getHealthRecordById(user.id, id);
+  }
+
+  @Put(':id')
+  @ApiOperation({
+    summary: 'Update Health Record',
+    description: 'Update an existing health record',
+  })
+  @ApiOperationSuccess(HealthRecordResponseDTO)
+  async updateHealthRecord(
+    @RequestUser() user: UserAuthProfile,
+    @Param('id') id: string,
+    @Body() dto: UpdateHealthRecordDTO,
+  ): Promise<HttpResponse> {
+    return this.healthRecordService.updateHealthRecord(user.id, id, dto);
   }
 }

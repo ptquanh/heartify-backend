@@ -18,6 +18,7 @@ import { BaseCRUDService } from '@shared/services/base-crud.service';
 import {
   CreateHealthRecordDTO,
   HealthRecordPaginationDTO,
+  UpdateHealthRecordDTO,
 } from './health-record.dto';
 import { HealthRecord } from './health-record.entity';
 
@@ -112,6 +113,91 @@ export class HealthRecordService extends BaseCRUDService<HealthRecord> {
     });
 
     return generateSuccessResult(healthRecord);
+  }
+
+  async updateHealthRecord(
+    userId: string,
+    recordId: string,
+    dto: UpdateHealthRecordDTO,
+  ): Promise<OperationResult<HealthRecord>> {
+    const record = await this.findOne({ id: recordId, userId });
+
+    if (!record) {
+      return generateNotFoundResult(
+        'Health record not found',
+        ERR_CODE.NOT_FOUND,
+      );
+    }
+
+    if (dto.measurements) {
+      dto.measurements = {
+        ...record.measurements,
+        ...dto.measurements,
+      };
+    }
+
+    const shouldRecalculateRisk =
+      dto.systolicBp ||
+      dto.totalCholesterol ||
+      dto.hdlCholesterol ||
+      dto.measurements?.weight?.value ||
+      dto.measurements?.height?.value;
+
+    if (shouldRecalculateRisk) {
+      const user = await this.userService.findOne(
+        { id: userId },
+        { relations: { profile: true } },
+      );
+
+      if (!user) {
+        return generateNotFoundResult(
+          'User not found',
+          ERR_CODE.USER_NOT_FOUND,
+        );
+      }
+
+      const riskPayload: RiskAssessmentPayloadDto = {
+        age: record.ageAtRecord,
+        gender: user.profile.gender,
+        isSmoker: user.profile.isSmoker,
+        isDiabetic: user.profile.isDiabetic,
+        isTreatedHypertension: user.profile.isTreatedHypertension,
+        systolicBp: dto.systolicBp || record.systolicBp,
+        totalCholesterol: dto.totalCholesterol || record.totalCholesterol,
+        hdlCholesterol: dto.hdlCholesterol || record.hdlCholesterol,
+        weight:
+          dto.measurements?.weight?.value || record.measurements?.weight?.value,
+        height:
+          dto.measurements?.height?.value || record.measurements?.height?.value,
+      };
+
+      const riskResult = this.riskService.calculateRisk(riskPayload);
+
+      if (riskResult.success) {
+        Object.assign(record, {
+          riskLevel: riskResult.data.riskLevel,
+          riskScore: riskResult.data.riskScore,
+          riskPercentage: riskResult.data.riskPercentage,
+          riskAlgorithm: riskResult.data.algorithmUsed,
+          identifiedRiskFactors: riskResult.data.riskFactors,
+        });
+      }
+    }
+
+    if (dto.measurements?.weight && dto.measurements?.height) {
+      const bmi = this.calculateBMI(
+        dto.measurements.weight,
+        dto.measurements.height,
+      );
+      if (bmi) {
+        dto.measurements.bmi = bmi;
+      }
+    }
+
+    Object.assign(record, dto);
+    const saved = await this.repo.save(record);
+
+    return generateSuccessResult(saved);
   }
 
   private calculateBMI(

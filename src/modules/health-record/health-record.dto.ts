@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 
 import { RiskLevel } from '@modules/risk-assessment/risk-assessment.constants';
 
@@ -60,6 +60,13 @@ export class CreateHealthRecordDTO {
   @IsOptional()
   healthRecordName?: string;
 
+  @ApiPropertyOptional({
+    description: 'Medical Facility Name',
+  })
+  @IsString()
+  @IsOptional()
+  medicalFacilityName?: string;
+
   @ApiProperty({ description: 'Systolic Blood Pressure', example: 120 })
   @IsNumber()
   @Min(50)
@@ -91,6 +98,8 @@ export class CreateHealthRecordDTO {
   @Type(() => BodyMetricsDTO)
   measurements?: BodyMetricsDTO;
 }
+
+export class UpdateHealthRecordDTO extends PartialType(CreateHealthRecordDTO) {}
 
 export class HealthRecordResponseDTO extends CreateHealthRecordDTO {
   @ApiProperty()
