@@ -25,7 +25,6 @@ export class CloudinaryService {
       timestamp,
       folder: dto.folder,
       expire_at: timestamp + TTL_5_MINUTES,
-      upload_preset: 'user_limited',
     };
 
     const signature = this.cloudinaryService.utils.api_sign_request(
@@ -40,7 +39,6 @@ export class CloudinaryService {
       cloudName: this.cloudinaryService.config().cloud_name,
       apiKey: this.cloudinaryService.config().api_key,
       expireAt: timestamp + TTL_5_MINUTES,
-      uploadPreset: 'user_limited',
     });
   }
 }
