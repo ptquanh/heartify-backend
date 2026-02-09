@@ -62,6 +62,9 @@ services:
       # Partner food recommendation
       PARTNER_FOOD_RECOMMENDATION_URL: '${PARTNER_FOOD_RECOMMENDATION_URL}'
 
+      # Partner exercise recommendation
+      PARTNER_EXERCISE_RECOMMENDATION_URL: '${PARTNER_EXERCISE_RECOMMENDATION_URL}'
+
     depends_on:
       postgres:
         condition: service_healthy
